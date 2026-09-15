@@ -1,0 +1,170 @@
+:root {
+    --color-primario: #0B5D52;
+    --color-primario-oscuro: #08423B;
+    --color-primario-claro: #E4F2EF;
+    --color-acento: #C2760C;
+    --color-fondo: #FAFAF8;
+    --color-texto: #16241F;
+    --color-texto-suave: #5C6D68;
+    --color-borde: #DDE6E3;
+    --color-error: #B3261E;
+    --color-exito: #1B7A4A;
+    --fuente: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --radio: 10px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--fuente);
+    background: var(--color-fondo);
+    color: var(--color-texto);
+    line-height: 1.5;
+}
+
+h1, h2, h3 {
+    font-weight: 600;
+    margin: 0 0 8px;
+}
+
+a {
+    color: var(--color-primario);
+}
+
+.btn {
+    display: inline-block;
+    background: var(--color-primario);
+    color: #fff;
+    border: none;
+    border-radius: var(--radio);
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.15s ease;
+}
+
+.btn:hover {
+    background: var(--color-primario-oscuro);
+}
+
+.campo {
+    margin-bottom: 18px;
+}
+
+.campo label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--color-texto);
+}
+
+.campo input,
+.campo select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio);
+    font-size: 15px;
+    font-family: var(--fuente);
+    background: #fff;
+    color: var(--color-texto);
+}
+
+.campo input:focus,
+.campo select:focus {
+    outline: none;
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px var(--color-primario-claro);
+}
+
+.mensaje-error {
+    background: #FBEAEA;
+    color: var(--color-error);
+    border: 1px solid #F0C7C4;
+    border-radius: var(--radio);
+    padding: 12px 14px;
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+.mensaje-exito {
+    background: #E7F4EC;
+    color: var(--color-exito);
+    border: 1px solid #BBE3CC;
+    border-radius: var(--radio);
+    padding: 12px 14px;
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+.mensaje-info {
+    background: #EAF1F5;
+    color: var(--color-texto-suave);
+    border: 1px solid #C9D9E3;
+    border-radius: var(--radio);
+    padding: 12px 14px;
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+.barra-superior {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-bottom: 1px solid var(--color-borde);
+    padding: 16px 24px;
+}
+
+.barra-superior .marca {
+    font-weight: 700;
+    color: var(--color-primario);
+}
+
+.contenido-panel {
+    max-width: 720px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* ===========================================================
+   Lista de requisitos de contraseña (validación en tiempo real)
+   Se usa en crear_usuario.php y en recuperar.php (sub-paso B).
+   =========================================================== */
+.lista-requisitos-password {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    font-size: 0.8rem;
+    display: grid;
+    gap: 2px;
+    color: var(--color-texto-suave);
+}
+
+.lista-requisitos-password li {
+    position: relative;
+    padding-left: 20px;
+}
+
+.lista-requisitos-password li::before {
+    content: "✗";
+    position: absolute;
+    left: 0;
+    color: var(--color-error);
+}
+
+.lista-requisitos-password li.cumple {
+    color: var(--color-primario);
+}
+
+.lista-requisitos-password li.cumple::before {
+    content: "✓";
+    color: var(--color-primario);
+}

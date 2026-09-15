@@ -1,0 +1,15 @@
+# Archivos generados por macOS
+.DS_Store
+
+# Archivos generados por Windows
+Thumbs.db
+
+# Carpeta de dependencias si algún día usan Composer/npm
+/vendor/
+/node_modules/
+
+# Credenciales de configuración de correo (se rellenan manualmente)
+config/correo.php
+
+# Credenciales reales del hosting/local (se pegan manualmente antes de subir)
+config/entorno.php

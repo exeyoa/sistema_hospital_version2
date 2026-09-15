@@ -1,0 +1,590 @@
+/* ============================================
+   Panel Médico — estilos específicos
+   Usa las variables de css/estilo.css:
+   --color-primario, --color-fondo, --color-texto, --color-borde
+   ============================================ */
+
+.medico-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f4f6fb;
+    color: var(--color-texto);
+}
+
+/* ---------- Barra superior ---------- */
+.medico-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background-color: #fff;
+    border-bottom: 1px solid var(--color-borde);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    z-index: 20;
+}
+
+.medico-topbar__menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--color-texto);
+}
+
+.medico-topbar__user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.medico-topbar__campana {
+    position: relative;
+    font-size: 1.2rem;
+    color: var(--color-texto);
+}
+
+.medico-topbar__campana .badge-notif {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background-color: #e53935;
+    color: #fff;
+    font-size: 0.65rem;
+    border-radius: 999px;
+    padding: 1px 6px;
+    font-weight: bold;
+}
+
+.medico-topbar__avatar {
+    position: relative;
+    width: 42px;
+    height: 42px;
+}
+
+.medico-topbar__avatar .avatar-inicial {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: var(--color-primario);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.medico-topbar__avatar .estado-online {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #22c55e;
+    border: 2px solid #fff;
+}
+
+.medico-topbar__nombre {
+    text-align: right;
+    line-height: 1.2;
+}
+
+.medico-topbar__nombre strong {
+    display: block;
+    font-size: 0.9rem;
+}
+
+.medico-topbar__nombre span {
+    font-size: 0.78rem;
+    color: #6b7280;
+}
+
+/* ---------- Sidebar ---------- */
+.medico-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, var(--color-primario) 0%, #0b1f4d 100%);
+    color: #fff;
+    padding: 1.5rem 1rem;
+    margin-top: 64px;
+    min-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+}
+
+.medico-sidebar__logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #fff;
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+}
+
+.medico-sidebar__logo-icono {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #fff;
+    color: var(--color-primario);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.medico-sidebar__logo strong {
+    display: block;
+    font-size: 1rem;
+}
+
+.medico-sidebar__logo span {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.medico-sidebar__titulo {
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    opacity: 0.6;
+    padding: 0 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.medico-sidebar__nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-grow: 1;
+}
+
+.medico-sidebar__nav li {
+    margin-bottom: 0.3rem;
+}
+
+.medico-sidebar__nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.65rem 0.8rem;
+    border-radius: 8px;
+    color: #dbe4ff;
+    text-decoration: none;
+    font-size: 0.92rem;
+    transition: background-color 0.15s ease;
+}
+
+.medico-sidebar__nav a:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.medico-sidebar__nav a.activo {
+    background-color: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    font-weight: 600;
+}
+
+.medico-sidebar__turno {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.medico-sidebar__turno-icono {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.6rem;
+}
+
+.medico-sidebar__turno p {
+    margin: 0.15rem 0;
+    font-size: 0.82rem;
+    opacity: 0.9;
+}
+
+/* ---------- Contenido principal ---------- */
+.medico-main {
+    margin-left: 260px;
+    margin-top: 64px;
+    padding: 2rem;
+    flex-grow: 1;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.medico-main__encabezado {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.medico-main__titulo h2 {
+    margin: 0 0 0.3rem 0;
+    font-size: 1.6rem;
+    position: relative;
+    padding-bottom: 0.6rem;
+}
+
+.medico-main__titulo h2::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background-color: var(--color-primario);
+    border-radius: 3px;
+}
+
+.medico-main__titulo p {
+    margin: 0.2rem 0;
+    color: #6b7280;
+    font-size: 0.92rem;
+}
+
+.tarjeta-resumen {
+    background-color: #eaf0ff;
+    border-radius: 12px;
+    padding: 1rem 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    min-width: 240px;
+}
+
+.tarjeta-resumen__icono {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background-color: var(--color-primario);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.tarjeta-resumen__numero {
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.tarjeta-resumen__label {
+    font-size: 0.82rem;
+    color: #4b5563;
+}
+
+.tarjeta-resumen__fecha {
+    font-size: 0.72rem;
+    color: #7c8aa5;
+    margin-top: 0.2rem;
+}
+
+/* ---------- Tabla de cola ---------- */
+.panel-tabla {
+    background-color: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--color-borde);
+    overflow: hidden;
+}
+
+.tabla-cola {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-cola th {
+    text-align: left;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+    color: #6b7280;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid var(--color-borde);
+    background-color: #fafbfd;
+}
+
+.tabla-cola td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--color-borde);
+    vertical-align: middle;
+    font-size: 0.92rem;
+}
+
+.tabla-cola tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-cola tbody tr:hover {
+    background-color: #f9fafc;
+}
+
+.celda-paciente {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.avatar-paciente {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #dbe4ff;
+    color: var(--color-primario);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.celda-paciente strong {
+    display: block;
+    font-size: 0.92rem;
+}
+
+.celda-paciente span {
+    font-size: 0.78rem;
+    color: #6b7280;
+}
+
+.numero-turno {
+    display: inline-block;
+    background-color: #eaf0ff;
+    color: var(--color-primario);
+    font-weight: bold;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.28rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-tipo-con_cita { background-color: #e6efff; color: #2554c7; }
+.badge-tipo-espontaneo { background-color: #e3f9ec; color: #1a9e5c; }
+
+.badge-estado-en_espera { background-color: #fef3d7; color: #a5730a; }
+.badge-estado-en_consulta { background-color: #e6efff; color: #2554c7; }
+.badge-estado-atendido { background-color: #e3f9ec; color: #1a9e5c; }
+
+.btn-accion {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.btn-accion.atender {
+    background-color: var(--color-primario);
+    color: #fff;
+}
+
+.btn-accion.continuar {
+    background-color: #fff;
+    color: var(--color-primario);
+    border-color: var(--color-primario);
+}
+
+.panel-tabla__nota {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1.2rem;
+    background-color: #f4f7ff;
+    color: #4b5563;
+    font-size: 0.85rem;
+    border-top: 1px solid var(--color-borde);
+}
+
+.panel-tabla__vacio {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: #6b7280;
+}
+
+/* ---------- Columna lateral derecha ---------- */
+.medico-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.tarjeta-lateral {
+    background-color: #fff;
+    border: 1px solid var(--color-borde);
+    border-radius: 12px;
+    padding: 1.2rem;
+}
+
+.tarjeta-lateral h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    margin: 0 0 1rem 0;
+}
+
+.tarjeta-lateral__dato {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #f0f1f4;
+}
+
+.tarjeta-lateral__dato:last-child {
+    border-bottom: none;
+}
+
+.tarjeta-lateral__dato-label {
+    font-size: 0.82rem;
+    color: #6b7280;
+}
+
+.tarjeta-lateral__dato-numero {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.tarjeta-lateral__dato-numero.alerta {
+    color: #a5730a;
+}
+
+.tarjeta-recordatorio {
+    background-color: #eaf0ff;
+    border: none;
+}
+
+.tarjeta-recordatorio p {
+    font-size: 0.85rem;
+    color: #37415a;
+    margin: 0;
+}
+
+/* ---------- Pestañas de filtro (Hoy / Todas) ---------- */
+.filtro-tabs {
+    display: flex;
+    gap: 0.4rem;
+    background-color: #eef1f6;
+    padding: 0.3rem;
+    border-radius: 10px;
+    height: fit-content;
+}
+
+.filtro-tab {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: #4b5563;
+}
+
+.filtro-tab.activo {
+    background-color: #fff;
+    color: var(--color-primario);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.texto-recortado {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 992px) {
+    .medico-main {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .medico-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.2s ease;
+        z-index: 15;
+        width: 240px;
+    }
+
+    .medico-sidebar.abierta {
+        transform: translateX(0);
+    }
+
+    .medico-main {
+        margin-left: 0;
+        padding: 1.2rem;
+    }
+
+    .medico-topbar__menu-btn {
+        display: block;
+    }
+
+    .medico-topbar__nombre {
+        display: none;
+    }
+
+    .tabla-cola thead {
+        display: none;
+    }
+
+    .tabla-cola, .tabla-cola tbody, .tabla-cola tr, .tabla-cola td {
+        display: block;
+        width: 100%;
+    }
+
+    .tabla-cola tr {
+        padding: 0.8rem 1rem;
+        border-bottom: 1px solid var(--color-borde);
+    }
+
+    .tabla-cola td {
+        border: none;
+        padding: 0.35rem 0;
+    }
+
+    .tabla-cola td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.72rem;
+        color: #9aa3b5;
+        margin-bottom: 0.1rem;
+    }
+}

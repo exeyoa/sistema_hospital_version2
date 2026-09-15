@@ -1,0 +1,380 @@
+/* login.css — layout dividido, mobile-first, versión moderna.
+   Panel de marca con carrusel de fotos (solo login.php).
+   Compartido con recuperar.php: todas las clases existentes se conservan.
+   Paleta azul celeste LOCAL para esta pantalla (las variables de estilo.css
+   NO se tocan). */
+
+.pantalla-login {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Panel de marca: franja superior en móvil, columna izquierda en escritorio */
+.panel-marca {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--color-primario) 0%, var(--color-primario-oscuro) 100%);
+    color: #fff;
+    padding: 40px 24px;
+}
+
+.patron-decorativo {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.14) 1.5px, transparent 1.5px);
+    background-size: 26px 26px;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.contenido-marca {
+    position: relative;
+    z-index: 1;
+    animation: aparecer-desde-abajo 0.6s ease both;
+}
+
+.marca-encabezado {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.marca-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.panel-marca .icono-cruz {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 16px;
+}
+
+.panel-marca h1 {
+    font-size: 22px;
+    color: #fff;
+}
+
+.panel-marca p {
+    font-size: 14px;
+    color: #CFE8E3;
+    max-width: 320px;
+}
+
+/* Panel del formulario */
+.panel-formulario {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px 48px;
+    background: var(--color-fondo);
+}
+
+.tarjeta-lateral h3 {
+    margin: 0 0 12px;
+    font-size: 1rem;
+    color: var(--admin-texto);
+}
+
+.accion-rapida {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 380px;
+    background: #fff;
+    border: 1px solid var(--color-borde);
+    border-radius: 16px;
+    padding: 32px 28px;
+    box-shadow: 0 20px 40px -20px rgba(11, 93, 82, 0.25);
+    animation: aparecer-desde-abajo 0.5s ease both 0.1s;
+}
+
+.actividad-item:last-child { border-bottom: none; }
+
+.punto-actividad {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+}
+
+.punto-azul { background: var(--admin-azul); }
+.punto-verde { background: var(--admin-verde); }
+.punto-rojo { background: var(--admin-rojo); }
+
+.actividad-item .hora {
+    display: block;
+    color: var(--admin-texto-suave);
+    font-size: 0.75rem;
+}
+
+.ver-todas {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: #7fa5f5;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+/* Objetivo táctil mínimo en todos los tamaños (evita zoom iOS) */
+.campo input,
+.campo select {
+    font-size: 16px;
+    min-height: 44px;
+}
+
+.admin-footer {
+    text-align: center;
+    padding: 18px;
+    color: var(--admin-texto-suave);
+    font-size: 0.8rem;
+}
+
+/* ===========================================================
+   Formulario "Nuevo Usuario"
+   =========================================================== */
+.form-contenedor {
+    grid-column: 1 / -1;
+    max-width: 780px;
+    margin: 0 auto;
+    width: 100%;
+    margin-top: 8px;
+    transform: translateY(0);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tarjeta-login .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px -6px rgba(11, 93, 82, 0.45);
+}
+
+.form-card-header-icono {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--admin-azul), var(--admin-cian));
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.form-card-header h2 {
+    margin: 0 0 4px;
+    font-size: 1.25rem;
+    color: var(--admin-texto);
+}
+
+.form-card-header p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--admin-texto-suave);
+}
+
+.form-fila {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.form-fila.una-columna {
+    grid-template-columns: 1fr;
+}
+
+.form-grupo label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--admin-texto);
+    margin-bottom: 8px;
+}
+
+.form-grupo label svg {
+    color: var(--admin-texto-suave);
+}
+
+.campo-icono {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.campo-icono svg {
+    position: absolute;
+    left: 12px;
+    color: var(--admin-texto-suave);
+    pointer-events: none;
+}
+
+.form-grupo input,
+.form-grupo select {
+    width: 100%;
+    padding: 12px 14px 12px 40px;
+    border: 1px solid var(--admin-borde);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: var(--admin-bg-input);
+    color: var(--admin-texto);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-grupo select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: none;
+}
+
+.form-grupo input::placeholder { color: #5b6579; }
+
+.form-grupo input:focus,
+.form-grupo select:focus {
+    outline: none;
+    border-color: var(--admin-azul);
+    box-shadow: 0 0 0 3px rgba(59, 111, 237, 0.2);
+}
+
+.input-con-icono input#password {
+    padding-right: 42px;
+}
+
+.seccion-titulo:first-child { margin-top: 0; }
+
+.seccion-nota {
+    font-size: 0.78rem;
+    color: var(--admin-texto-suave);
+    margin: -10px 0 14px;
+}
+
+.campo-password button {
+    position: absolute;
+    right: 12px;
+    left: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--admin-texto-suave);
+    padding: 4px;
+    pointer-events: auto;
+}
+
+.bloque-estado-cuenta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--admin-borde);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 4px;
+}
+
+.bloque-estado-cuenta .icono-estado {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--admin-azul-claro);
+    color: #7fa5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.bloque-estado-cuenta strong {
+    display: block;
+    font-size: 0.87rem;
+    color: var(--admin-texto);
+}
+
+.bloque-estado-cuenta span {
+    font-size: 0.78rem;
+    color: var(--admin-texto-suave);
+}
+
+.interruptor {
+    position: relative;
+    width: 44px;
+    height: 25px;
+    flex-shrink: 0;
+}
+
+.interruptor input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.interruptor .deslizador {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.interruptor .deslizador::before {
+    content: "";
+    position: absolute;
+    width: 19px;
+    height: 19px;
+    pointer-events: auto;
+}
+
+@keyframes aparecer-desde-abajo {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tablet y escritorio: pasa a dos columnas lado a lado */
+@media (min-width: 768px) {
+    .pantalla-login {
+        flex-direction: row;
+    }
+
+    .panel-marca {
+        width: 38%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 48px;
+    }
+
+    .panel-marca h1 {
+        font-size: 28px;
+    }
+
+    .panel-formulario {
+        width: 62%;
+    }
+}
+
+@media (min-width: 1024px) {
+    .panel-marca {
+        width: 42%;
+        padding: 64px;
+    }
+
+    .tarjeta-login {
+        max-width: 400px;
+    }
+}
