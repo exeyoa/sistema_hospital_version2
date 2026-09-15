@@ -4,6 +4,8 @@ require_once __DIR__ . '/../config/sesion.php';
 // Protección de sesión (igual que en admin.php)
 verificarSesion(['admin']);
 
+require_once __DIR__ . '/_iconos.php'; // función icono() para el HTML
+
 $csrfToken = generarTokenCSRF();
 if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'admin') {
     header('Location: login.php');
