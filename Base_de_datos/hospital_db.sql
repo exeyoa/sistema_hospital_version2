@@ -51,7 +51,8 @@ CREATE TABLE codigos_recuperacion (
 -- Catálogo de especialidades médicas
 CREATE TABLE especialidades (
     id_especialidad INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_especialidad VARCHAR(60) NOT NULL UNIQUE
+    nombre_especialidad VARCHAR(60) NOT NULL UNIQUE,
+    descripcion TEXT
 );
 
 -- Datos propios de cada médico, ligado a su cuenta de usuario
