@@ -16,19 +16,58 @@ if (!$medico) {
 }
 $id_medico = $medico['id_medico'];
 
-// --- Cola de pacientes en espera / en consulta, hoy ---
+// --- Cola personal: turnos con cita asignados a este médico, hoy ---
+$sqlCola = "
+    SELECT t.id_turno, t.numero_turno, t.tipo, t.estado, t.fecha,
+           p.id_paciente, p.nombre, p.apellido, p.cedula, p.fecha_nacimiento
+    FROM turnos t
+    INNER JOIN citas c ON c.id_cita = t.id_cita
+    INNER JOIN pacientes p ON p.id_paciente = t.id_paciente
+    WHERE c.id_medico = :id_medico
+      AND t.estado IN ('en_espera', 'en_consulta')
+      AND DATE(t.fecha) = CURDATE()
+";
+$stmtCola = $conexion->prepare($sqlCola);
+$stmtCola->execute([':id_medico' => $id_medico]);
+$cola = $stmtCola->fetchAll(PDO::FETCH_ASSOC);
+
+// --- Turnos con consulta abierta que este médico ya tomó (estado en_consulta) ---
+$sqlCola = "
+    SELECT t.id_turno, t.numero_turno, t.tipo, t.estado, t.fecha,
+           p.id_paciente, p.nombre, p.apellido, p.cedula, p.fecha_nacimiento
+    FROM turnos t
+    INNER JOIN consultas co ON co.id_turno = t.id_turno
+    INNER JOIN pacientes p ON p.id_paciente = t.id_paciente
+    WHERE co.id_medico = :id_medico
+      AND t.estado = 'en_consulta'
+      AND DATE(t.fecha) = CURDATE()
+";
+$stmtCola = $conexion->prepare($sqlCola);
+$stmtCola->execute([':id_medico' => $id_medico]);
+$cola = array_merge($cola, $stmtCola->fetchAll(PDO::FETCH_ASSOC));
+
+// --- Espontáneos libres (sin consulta creada todavía) ---
 $sqlCola = "
     SELECT t.id_turno, t.numero_turno, t.tipo, t.estado, t.fecha,
            p.id_paciente, p.nombre, p.apellido, p.cedula, p.fecha_nacimiento
     FROM turnos t
     INNER JOIN pacientes p ON p.id_paciente = t.id_paciente
-    WHERE t.estado IN ('en_espera', 'en_consulta')
+    WHERE t.tipo = 'espontaneo'
+      AND t.estado = 'en_espera'
       AND DATE(t.fecha) = CURDATE()
-    ORDER BY t.numero_turno ASC
+      AND NOT EXISTS (SELECT 1 FROM consultas co WHERE co.id_turno = t.id_turno)
 ";
 $stmtCola = $conexion->prepare($sqlCola);
 $stmtCola->execute();
-$cola = $stmtCola->fetchAll(PDO::FETCH_ASSOC);
+$cola = array_merge($cola, $stmtCola->fetchAll(PDO::FETCH_ASSOC));
+
+// --- Limpiar duplicados (un turno puede caer en 1 y 2) y ordenar ---
+$colaUnica = [];
+foreach ($cola as $turno) {
+    $colaUnica[$turno['id_turno']] = $turno;
+}
+usort($colaUnica, fn($a, $b) => strnatcasecmp($a['numero_turno'], $b['numero_turno']));
+$cola = $colaUnica;
 
 // --- Estadísticas rápidas del día ---
 $stmtTotalHoy = $conexion->prepare("SELECT COUNT(*) FROM turnos WHERE DATE(fecha) = CURDATE()");
