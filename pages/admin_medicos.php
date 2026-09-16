@@ -180,7 +180,7 @@ function iniciales($nombre, $apellido) {
                             $colorAvatar = ['#2563eb', '#16a34a', '#7c3aed', '#d97706', '#0891b2'][$m['id_usuario'] % 5];
                         ?>
                         <tr>
-                            <td>
+                            <td data-label="Médico">
                                 <div class="celda-nombre">
                                     <div class="avatar-usuario" style="background: <?php echo $colorAvatar; ?>;">
                                         <?php echo htmlspecialchars($iniciales); ?>
@@ -190,17 +190,17 @@ function iniciales($nombre, $apellido) {
                                     </div>
                                 </div>
                             </td>
-                            <td><?php echo htmlspecialchars($m['nombre_especialidad'] ?? '—'); ?></td>
-                            <td><?php echo htmlspecialchars($m['numero_colegiado'] ?? '—'); ?></td>
-                            <td><?php echo htmlspecialchars($m['correo']); ?></td>
-                            <td>
+                            <td data-label="Especialidad"><?php echo htmlspecialchars($m['nombre_especialidad'] ?? '—'); ?></td>
+                            <td data-label="Colegiado"><?php echo htmlspecialchars($m['numero_colegiado'] ?? '—'); ?></td>
+                            <td data-label="Correo"><?php echo htmlspecialchars($m['correo']); ?></td>
+                            <td data-label="Estado">
                                 <?php if ($m['activo']): ?>
                                     <span class="estado-punto estado-activo">Activo</span>
                                 <?php else: ?>
                                     <span class="estado-punto estado-inactivo">Inactivo</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="acciones-fila">
+                            <td data-label="Acciones" class="acciones-fila">
                                 <a href="editar_usuario.php?id=<?php echo $m['id_usuario']; ?>&volver=medicos" title="Editar"><?php echo icono('editar', 15); ?></a>
                                 <?php if ($m['activo']): ?>
                                     <form method="post" action="cambiar_estado_usuario.php" class="accion-fila-form"

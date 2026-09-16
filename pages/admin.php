@@ -240,8 +240,8 @@ function iniciales($nombre, $apellido) {
                             $colorAvatar = ['#2563eb', '#16a34a', '#7c3aed', '#d97706', '#0891b2'][$u['id_usuario'] % 5];
                         ?>
                         <tr>
-                            <td><?php echo $u['id_usuario']; ?></td>
-                            <td>
+                            <td data-label="ID"><?php echo $u['id_usuario']; ?></td>
+                            <td data-label="Nombre">
                                 <div class="celda-nombre">
                                     <div class="avatar-usuario" style="background: <?php echo $colorAvatar; ?>;">
                                         <?php echo htmlspecialchars($iniciales); ?>
@@ -252,17 +252,17 @@ function iniciales($nombre, $apellido) {
                                     </div>
                                 </div>
                             </td>
-                            <td><?php echo htmlspecialchars($u['correo']); ?></td>
-                            <td><?php echo htmlspecialchars($u['usuario']); ?></td>
-                            <td><span class="badge-rol <?php echo $rolClase; ?>"><?php echo htmlspecialchars($rolTexto); ?></span></td>
-                            <td>
+                            <td data-label="Correo"><?php echo htmlspecialchars($u['correo']); ?></td>
+                            <td data-label="Usuario"><?php echo htmlspecialchars($u['usuario']); ?></td>
+                            <td data-label="Rol"><span class="badge-rol <?php echo $rolClase; ?>"><?php echo htmlspecialchars($rolTexto); ?></span></td>
+                            <td data-label="Estado">
                                 <?php if ($u['activo']): ?>
                                     <span class="estado-punto estado-activo">Activo</span>
                                 <?php else: ?>
                                     <span class="estado-punto estado-inactivo">Inactivo</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="acciones-fila">
+                            <td data-label="Acciones" class="acciones-fila">
                                 <a href="editar_usuario.php?id=<?php echo $u['id_usuario']; ?>" title="Editar"><?php echo icono('editar', 15); ?></a>
                                 <?php if ($u['id_usuario'] == $_SESSION['id_usuario']): ?>
                                     <a href="#" title="No puedes desactivar tu propia cuenta" style="opacity:0.35; cursor:not-allowed;" onclick="return false;"><?php echo icono('candado', 15); ?></a>
