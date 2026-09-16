@@ -131,6 +131,8 @@ CREATE TABLE recetas (
     id_receta INT AUTO_INCREMENT PRIMARY KEY,
     id_consulta INT NOT NULL UNIQUE,
     fecha_emision DATETIME DEFAULT CURRENT_TIMESTAMP,
+    estado ENUM('activa','expirada') NOT NULL DEFAULT 'activa',
+    indicaciones TEXT NULL,
     FOREIGN KEY (id_consulta) REFERENCES consultas(id_consulta)
 );
 
