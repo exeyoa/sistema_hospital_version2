@@ -1,0 +1,497 @@
+/* ===========================================================
+   recepcionista.css — Estilos del Panel de Recepcionista
+   Se carga DESPUÉS de css/estilo.css (usa sus variables globales
+   y clases base: .btn, .campo, .mensaje-*, .panel-tabla).
+
+   Paleta LOCAL azul-celeste (mismos tonos base que css/login.css,
+   ajustados a los valores aprobados para este panel):
+     fondo #F3FAFF · borde tarjetas #CFE8F7 · acento/botones #1878A8
+   estilo.css NO se toca: las variables de abajo solo viven aquí.
+   Los mensajes de error/éxito mantienen su semántica global
+   (rojo/verde) y solo el "info" se reestiliza con azul.
+
+   Breakpoints (los mismos que ya usa el proyecto):
+     - Base:        ≥ 993px (escritorio)
+     - ≤ 992px:     tablet / layout de una columna
+     - ≤ 768px:     móvil — las tablas se convierten en tarjetas
+                    apiladas con el patrón data-label + td::before
+     - ≤ 480px:     móvil pequeño — inputs a 16px y botones a
+                    ancho completo
+   =========================================================== */
+
+:root {
+    --recp-azul-oscuro:    #0B3D66;
+    --recp-azul-medio:     #1878A8;
+    --recp-azul-claro:     #CFE8F7;
+    --recp-azul-muy-claro: #F3FAFF;
+    --recp-fondo:          #F3FAFF;
+    --recp-texto-azul:     #0E3A5C;
+    --recp-radio-grande:   14px;
+}
+
+/* ---------- Navegación por anclas en la barra superior ---------- */
+.nav-secciones {
+    display: flex;
+    gap: 18px;
+}
+
+.nav-secciones a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.92rem;
+    padding: 6px 2px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s ease, border-bottom-color 0.15s ease;
+}
+
+.nav-secciones a:hover,
+.nav-secciones a:focus-visible {
+    color: #fff;
+    border-bottom-color: var(--recp-azul-claro);
+}
+
+/* Cabecera del panel con la misma energía visual que el panel-marca
+   del login (degradado azul + texto blanco). Si estilo.css ya pinta
+   la barra superior, este bloque la reestiliza solo dentro del
+   contexto de recepcionista.php. */
+.barra-superior {
+    background: linear-gradient(135deg,
+        var(--recp-azul-oscuro) 0%,
+        var(--recp-azul-medio)  100%);
+    color: #fff;
+    box-shadow: 0 4px 14px -6px rgba(11, 61, 102, 0.45);
+}
+
+.barra-superior .marca {
+    color: #fff;
+    font-weight: 700;
+}
+
+.barra-superior a,
+.barra-superior span {
+    color: #fff;
+}
+
+.barra-superior a:hover,
+.barra-superior a:focus-visible {
+    color: var(--recp-azul-claro);
+}
+
+/* El panel de recepción necesita más ancho que el de estilo.css
+   (720px) porque muestra tablas de citas y turnos. */
+.contenido-panel--ancho {
+    max-width: 1100px;
+    background: var(--recp-fondo);
+    padding: 24px;
+    border-radius: var(--recp-radio-grande);
+}
+
+/* Separación entre secciones ancladas + margen de scroll para que el
+   título de la sección no quede pegado al borde al navegar por anclas */
+.seccion-panel {
+    margin-bottom: 40px;
+    scroll-margin-top: 20px;
+}
+
+.seccion-panel h2 {
+    color: var(--recp-azul-medio);
+    font-size: 1.55rem;
+    border-bottom: 2px solid var(--recp-azul-claro);
+    padding-bottom: 8px;
+    margin-bottom: 18px;
+}
+
+.seccion-panel h3 {
+    color: var(--recp-azul-oscuro);
+    margin-top: 22px;
+    font-size: 1.1rem;
+}
+
+.seccion-panel h4 {
+    color: var(--recp-texto-azul);
+    margin: 16px 0 8px;
+    font-size: 0.98rem;
+    font-weight: 600;
+}
+
+/* ---------- Buscador de pacientes ---------- */
+.form-buscar {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.form-buscar .campo {
+    flex: 1 1 280px;
+    margin-bottom: 0;
+}
+
+/* Inputs / selects del panel con foco azul (mismo lenguaje que login) */
+.contenido-panel--ancho .campo input,
+.contenido-panel--ancho .campo select {
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.contenido-panel--ancho .campo input:focus,
+.contenido-panel--ancho .campo select:focus {
+    border-color: var(--recp-azul-medio);
+    box-shadow: 0 0 0 3px rgba(24, 120, 168, 0.18);
+    outline: none;
+}
+
+/* Opciones deshabilitadas del <select> (horas ocupadas).
+   El navegador ya marca el texto en gris; background + cursor se
+   fuerzan aquí para que se vea consistente con la paleta. */
+.contenido-panel--ancho select option:disabled {
+    color: #94A3B8;
+    background: #F1F5F9;
+}
+
+/* Contenedor del select deshabilitado mientras se verifica
+   disponibilidad: cursor not-allowed para reforzar el estado. */
+.contenido-panel--ancho select:disabled {
+    cursor: not-allowed;
+    background-color: var(--recp-azul-muy-claro);
+}
+
+.lista-resultados {
+    list-style: none;
+    margin: 16px 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.lista-resultados li,
+.lista-citas-hoy li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: #fff;
+    border: 1px solid var(--recp-azul-claro);
+    border-radius: var(--recp-radio-grande);
+    padding: 12px 16px;
+    box-shadow: 0 2px 6px -3px rgba(11, 61, 102, 0.18);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.lista-resultados li:hover,
+.lista-citas-hoy li:hover {
+    box-shadow: 0 6px 14px -6px rgba(24, 120, 168, 0.30);
+    transform: translateY(-1px);
+}
+
+.lista-citas-hoy {
+    list-style: none;
+    margin: 12px 0 20px;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.texto-seleccionado {
+    color: var(--color-exito);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.btn-pequeno {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+}
+
+/* Botón principal con la energía del login: hover se eleva y brilla */
+.contenido-panel--ancho .btn {
+    background-color: var(--recp-azul-medio);
+    transition: background-color 0.15s ease,
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
+}
+
+.contenido-panel--ancho .btn:hover,
+.contenido-panel--ancho .btn:focus-visible {
+    background-color: var(--recp-azul-oscuro);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px -6px rgba(24, 120, 168, 0.45);
+}
+
+/* ---------- Tarjeta con el formulario de cita / turno ---------- */
+.tarjeta-formulario {
+    background: #fff;
+    border: 1px solid var(--recp-azul-claro);
+    border-radius: var(--recp-radio-grande);
+    padding: 22px;
+    margin: 18px 0;
+    box-shadow: 0 8px 22px -14px rgba(24, 120, 168, 0.35);
+}
+
+/* ---------- Contadores de turnos del día ---------- */
+.contadores-turnos {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin: 18px 0;
+}
+
+.contador {
+    background: linear-gradient(160deg, #fff 0%, var(--recp-azul-muy-claro) 100%);
+    border: 1px solid var(--recp-azul-claro);
+    border-radius: var(--recp-radio-grande);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-shadow: 0 4px 12px -8px rgba(11, 61, 102, 0.30);
+}
+
+.contador__numero {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--recp-azul-medio);
+    line-height: 1.1;
+}
+
+.contador__etiqueta {
+    font-size: 0.82rem;
+    color: var(--recp-texto-azul);
+    font-weight: 500;
+}
+
+/* ---------- Tablas de citas y turnos ---------- */
+.tabla-recepcion {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    background: #fff;
+    border-radius: var(--recp-radio-grande);
+    overflow: hidden;
+    box-shadow: 0 6px 18px -12px rgba(11, 61, 102, 0.30);
+}
+
+.tabla-recepcion th {
+    text-align: left;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: #fff;
+    padding: 12px 14px;
+    background: var(--recp-azul-medio);
+    border-bottom: none;
+    text-transform: uppercase;
+}
+
+.tabla-recepcion td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--recp-azul-muy-claro);
+    vertical-align: middle;
+}
+
+.tabla-recepcion tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-recepcion tbody tr:hover {
+    background: var(--recp-azul-muy-claro);
+}
+
+/* Número de turno destacado */
+.numero-turno {
+    display: inline-block;
+    background: var(--recp-azul-claro);
+    color: var(--recp-azul-oscuro);
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    min-width: 38px;
+    text-align: center;
+}
+
+/* ---------- Mensajes ---------- */
+.mensaje-info {
+    background: var(--recp-azul-muy-claro);
+    color: var(--recp-texto-azul);
+    border-left: 4px solid var(--recp-azul-medio);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+}
+
+/* ---------- Badges de tipo y estado ---------- */
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Tipos de turno */
+.badge-tipo-con_cita   { background: var(--recp-azul-claro);  color: var(--recp-azul-oscuro); }
+.badge-tipo-espontaneo { background: #D7F3DF;                 color: #136A3A; }
+
+/* Estados de turno */
+.badge-estado-en_espera   { background: #FFE9C2; color: #8C5A12; }
+.badge-estado-en_consulta { background: var(--recp-azul-claro); color: var(--recp-azul-oscuro); }
+.badge-estado-atendido    { background: #D7F3DF; color: #136A3A; }
+
+/* Estados de cita */
+.badge-cita-pendiente  { background: #FFE9C2; color: #8C5A12; }
+.badge-cita-confirmada { background: var(--recp-azul-claro); color: var(--recp-azul-oscuro); }
+.badge-cita-cancelada  { background: #ECEFF3; color: #4B5563; }
+.badge-cita-atendida   { background: #D7F3DF; color: #136A3A; }
+
+/* ---------- Acciones en línea (cancelar cita / generar turno) ---------- */
+.form-accion-inline {
+    display: inline;
+    margin: 0;
+}
+
+.btn-accion-cancelar {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--color-error);
+    background: #fff;
+    color: var(--color-error);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn-accion-cancelar:hover {
+    background: var(--color-error);
+    color: #fff;
+}
+
+/* Botón deshabilitado tras enviar (anti-doble-envío) */
+.btn:disabled,
+.btn-pequeno:disabled,
+.btn-accion-cancelar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Texto solo para lectores de pantalla (mensajes aria-live discretos) */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ===========================================================
+   ≤ 992px — tablet: contadores en 2 columnas, barra flexible
+   =========================================================== */
+@media (max-width: 992px) {
+    .contadores-turnos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .barra-superior {
+        flex-wrap: wrap;
+        gap: 10px;
+        row-gap: 6px;
+    }
+
+    .nav-secciones {
+        order: 3;
+        width: 100%;
+    }
+
+    .contenido-panel--ancho {
+        padding: 16px;
+    }
+}
+
+/* ===========================================================
+   ≤ 768px — móvil: tablas → tarjetas apiladas
+   (patrón data-label + td::before, igual que css/medico.css)
+   =========================================================== */
+@media (max-width: 768px) {
+    .tabla-recepcion thead {
+        display: none;
+    }
+
+    .tabla-recepcion,
+    .tabla-recepcion tbody,
+    .tabla-recepcion tr,
+    .tabla-recepcion td {
+        display: block;
+        width: 100%;
+    }
+
+    .tabla-recepcion tr {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--recp-azul-muy-claro);
+    }
+
+    .tabla-recepcion tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .tabla-recepcion td {
+        border: none;
+        padding: 4px 0;
+    }
+
+    .tabla-recepcion td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.72rem;
+        color: var(--recp-texto-azul);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 2px;
+        font-weight: 600;
+    }
+}
+
+/* ===========================================================
+   ≤ 480px — móvil pequeño: inputs a 16px y botones a lo ancho
+   =========================================================== */
+@media (max-width: 480px) {
+    .campo input,
+    .campo select,
+    .form-buscar input {
+        font-size: 16px; /* evita el zoom automático de iOS al enfocar */
+    }
+
+    .btn,
+    .btn-accion-cancelar {
+        width: 100%;
+        text-align: center;
+    }
+
+    .form-buscar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .lista-resultados li,
+    .lista-citas-hoy li {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .contadores-turnos {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .contenido-panel--ancho {
+        padding: 12px;
+    }
+}
