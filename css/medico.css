@@ -118,7 +118,7 @@
     flex-direction: column;
     justify-content: space-between;
     position: fixed;
-    left: 0;
+    right: 0; /* sidebar a la derecha (antes: left: 0) */
     top: 0;
     overflow-y: auto;
 }
@@ -223,7 +223,7 @@
 
 /* ---------- Contenido principal ---------- */
 .medico-main {
-    margin-left: 260px;
+    margin-right: 260px; /* antes: margin-left (sidebar estaba a la izquierda) */
     margin-top: 64px;
     padding: 2rem;
     flex-grow: 1;
@@ -538,7 +538,7 @@
 
 @media (max-width: 768px) {
     .medico-sidebar {
-        transform: translateX(-100%);
+        transform: translateX(100%); /* sale desde la derecha (antes era -100% cuando estaba a la izquierda) */
         transition: transform 0.2s ease;
         z-index: 15;
         width: 240px;
@@ -549,7 +549,7 @@
     }
 
     .medico-main {
-        margin-left: 0;
+        margin-right: 0; /* antes: margin-left: 0 (sidebar ahora a la derecha) */
         padding: 1.2rem;
     }
 
