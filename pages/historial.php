@@ -153,7 +153,8 @@ $pacientes = $stmtPacientes->fetchAll(PDO::FETCH_ASSOC);
                                 <td data-label="Observaciones" class="texto-recortado"><?= htmlspecialchars($consulta['observaciones'] ?? '') ?></td>
                                 <td data-label="Receta">
                                     <?php if ($consulta['id_receta']): ?>
-                                        <span class="badge badge-estado-atendido">Con receta</span>
+                                        <a class="btn-accion atender"
+                                           href="recetas.php?id_receta=<?= (int) $consulta['id_receta'] ?>">Ver receta</a>
                                     <?php else: ?>
                                         <span class="badge badge-sin-receta">Sin receta</span>
                                     <?php endif; ?>
