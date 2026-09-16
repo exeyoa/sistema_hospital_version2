@@ -84,17 +84,15 @@ $consultas = $stmtConsultas->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <section class="panel-tabla" style="grid-column: 1 / -1;">
-            <form method="get" action="mis_consultas.php" class="campo" style="padding:0 1rem;margin-bottom:0;">
+            <form method="get" action="mis_consultas.php" class="campo panel-tabla__filtros">
                 <input type="hidden" name="filtro" value="<?= htmlspecialchars($filtro) ?>">
-                <div style="display:flex;gap:0.5rem;align-items:end;">
-                    <div style="flex:1;">
-                        <label for="busqueda">Buscar por cédula, nombre o apellido</label>
-                        <input type="text" name="busqueda" id="busqueda"
-                               placeholder="Ej: 12345678 o Juan Pérez…"
-                               value="<?= htmlspecialchars($busqueda) ?>">
-                    </div>
-                    <button type="submit" class="btn" style="margin-bottom:1px;">Buscar</button>
+                <div style="flex:1;">
+                    <label for="busqueda">Buscar por cédula, nombre o apellido</label>
+                    <input type="text" name="busqueda" id="busqueda"
+                           placeholder="Ej: 12345678 o Juan Pérez…"
+                           value="<?= htmlspecialchars($busqueda) ?>">
                 </div>
+                <button type="submit" class="btn">Buscar</button>
             </form>
 
             <?php if (empty($consultas)): ?>

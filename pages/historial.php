@@ -175,13 +175,13 @@ $pacientes = $stmtPacientes->fetchAll(PDO::FETCH_ASSOC);
             </div>
 
             <section class="panel-tabla" style="grid-column: 1 / -1;">
-                <form method="get" action="historial.php" class="campo">
-                    <div>
+                <form method="get" action="historial.php" class="campo panel-tabla__filtros">
+                    <div style="flex:1;">
                         <input type="text" name="busqueda" id="busqueda"
                                placeholder="Buscar por cédula, nombre o apellido…"
                                value="<?= htmlspecialchars($busqueda) ?>">
-                        <button type="submit" class="btn">Buscar</button>
                     </div>
+                    <button type="submit" class="btn">Buscar</button>
                 </form>
 
                 <?php if ($idPaciente > 0): ?>

@@ -442,6 +442,44 @@
     color: #6b7280;
 }
 
+/* ---------- Buscador/filtros sobre la tabla ---------- */
+.panel-tabla__filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: flex-end;
+    padding: 1rem 1rem 0;
+    margin-bottom: 0;
+}
+
+.panel-tabla__filtros .campo {
+    margin-bottom: 0;
+    flex: 1 1 16rem;
+}
+
+.panel-tabla__filtros input {
+    padding: 10px 12px;
+}
+
+.panel-tabla__filtros .btn {
+    padding: 10px 16px;
+}
+
+.panel-tabla__filtros label {
+    margin-bottom: 4px;
+}
+
+@media (max-width: 768px) {
+    .panel-tabla__filtros {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .panel-tabla__filtros .campo {
+        flex: 1 1 auto;
+    }
+}
+
 /* ---------- Columna lateral derecha ---------- */
 .medico-aside {
     display: flex;
