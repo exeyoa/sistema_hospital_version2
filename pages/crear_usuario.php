@@ -209,6 +209,22 @@ function iniciales($nombre, $apellido) {
                     <form method="POST" action="crear_usuario.php" id="formNuevoUsuario">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
+                        <div class="form-fila una-columna">
+                            <div class="form-grupo">
+                                <label for="cedula_buscar"><?php echo icono('archivo', 15); ?> Cédula (buscar paciente)</label>
+                                <div style="display:flex; gap:8px; align-items:stretch;">
+                                    <div class="campo-icono" style="flex:1;">
+                                        <?php echo icono('archivo', 16); ?>
+                                        <input type="text" id="cedula_buscar" placeholder="Ejemplo: 8-123-456" autocomplete="off">
+                                    </div>
+                                    <button type="button" id="btnBuscarCedula" class="btn-secundario">Buscar</button>
+                                </div>
+                                <div class="form-ayuda" id="avisoCedula">
+                                    Si la cédula ya está registrada como paciente, se rellenarán nombre, apellido y correo.
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-fila">
                             <div class="form-grupo">
                                 <label for="nombre"><?php echo icono('usuario', 15); ?> Nombre</label>
@@ -341,6 +357,73 @@ function mostrarCamposMedico() {
     document.getElementById('camposMedico').style.display = (rolTexto === 'medico') ? 'block' : 'none';
 }
 document.addEventListener('DOMContentLoaded', mostrarCamposMedico);
+
+const patronCedula = /^(?:[A-Z]{1,2}-)?\d{1,4}-\d{1,4}(?:-\d{1,4})?$/;
+
+function mostrarAvisoCedula(mensaje, tipo) {
+    const aviso = document.getElementById('avisoCedula');
+    if (!aviso) return;
+    aviso.textContent = mensaje;
+    if (tipo === 'ok') {
+        aviso.style.color = '#16a34a';
+    } else if (tipo === 'error') {
+        aviso.style.color = '#dc2626';
+    } else {
+        aviso.style.color = '';
+    }
+}
+
+function buscarCedula() {
+    const inputCedula = document.getElementById('cedula_buscar');
+    const cedula = inputCedula.value.trim();
+
+    if (cedula === '') {
+        mostrarAvisoCedula('', '');
+        return;
+    }
+    if (!patronCedula.test(cedula)) {
+        mostrarAvisoCedula('Formato de cédula no válido (ejemplo: 8-123-456).', 'error');
+        return;
+    }
+
+    const tokenCsrf = document.querySelector('#formNuevoUsuario input[name="csrf_token"]').value;
+    const datos = new FormData();
+    datos.append('csrf_token', tokenCsrf);
+    datos.append('cedula', cedula);
+
+    mostrarAvisoCedula('Buscando...', '');
+
+    fetch('ajax/buscar_cedula.php', { method: 'POST', body: datos })
+        .then(function (respuesta) { return respuesta.json(); })
+        .then(function (resultado) {
+            if (resultado.encontrado) {
+                document.getElementById('nombre').value = resultado.nombre || '';
+                document.getElementById('apellido').value = resultado.apellido || '';
+                document.getElementById('correo').value = resultado.correo || '';
+                mostrarAvisoCedula('Paciente encontrado, datos rellenados. Puedes editarlos si lo necesitas.', 'ok');
+            } else {
+                mostrarAvisoCedula('No se encontró ningún paciente con esa cédula, complete manualmente.', '');
+            }
+        })
+        .catch(function () {
+            mostrarAvisoCedula('No se pudo realizar la búsqueda. Intenta nuevamente.', 'error');
+        });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const btn = document.getElementById('btnBuscarCedula');
+    const inputCedula = document.getElementById('cedula_buscar');
+    if (btn) {
+        btn.addEventListener('click', buscarCedula);
+    }
+    if (inputCedula) {
+        inputCedula.addEventListener('blur', function () {
+            if (inputCedula.value.trim() !== '') {
+                buscarCedula();
+            }
+        });
+    }
+});
 </script>
 
 </body>
