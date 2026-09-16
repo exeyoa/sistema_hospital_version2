@@ -1,0 +1,163 @@
+/* ============================================================
+   admin_tema.css — Paleta compartida del Panel de Administrador
+   -----------------------------------------------------------------
+   Se carga DESPUÉS del CSS propio de cada sección para que esta
+   paleta tenga la última palabra sobre los colores. Aplica a las
+   seis secciones: admin (/medicos/pacientes), especialidades,
+   consultas y recetas.
+
+   ALCANCE: 100% color (sidebar navy, fondo de contenido gris neutro,
+   acento azul unificado). No define ni toca layout, estructura ni
+   componentes semánticos (badges de estado quedan intactos).
+
+   Los selectores usan prefijo del body (p. ej. .esp-body .esp-sidebar)
+   para que la especificidad gane sin depender del orden de carga.
+   ============================================================ */
+
+:root {
+    --tema-sidebar-bg: #0f1c2e;
+    --tema-sidebar-hover: #1a2b42;
+    --tema-sidebar-activo: #1f3a5f;
+    --tema-sidebar-texto: #cfd8e3;
+    --tema-sidebar-seccion: #7f92a8;
+    --tema-sidebar-marca: #60a5fa;
+    --tema-sidebar-icono-bg: #1c3a52;
+    --tema-fondo: #f4f6f9;
+    --tema-acento: #2563EB;
+    --tema-acento-oscuro: #1D4ED8;
+    --tema-acento-suave: #DBEAFE;
+    --tema-acento-banner-2: #3B82F6;
+}
+
+/* ------------------------------------------------------------
+   1) Acento unificado
+   Recetas usaba teal; se unifica al azul del resto del panel.
+   ------------------------------------------------------------ */
+.rec-body {
+    --rec-acento: var(--tema-acento);
+    --rec-acento-oscuro: var(--tema-acento-oscuro);
+    --rec-acento-suave: var(--tema-acento-suave);
+}
+
+.rec-body .rec-banner {
+    background: linear-gradient(135deg, var(--tema-acento) 0%, var(--tema-acento-banner-2) 100%);
+}
+
+/* ------------------------------------------------------------
+   2) Fondo de contenido: gris neutro (reemplaza el azul de las
+   páginas oscuras y fija el mismo gris en las claras).
+   ------------------------------------------------------------ */
+body.admin-body,
+body.esp-body,
+body.con-body,
+body.rec-body {
+    background: var(--tema-fondo);
+}
+
+/* ------------------------------------------------------------
+   3) Sidebar navy idéntico en las 6 secciones
+   ------------------------------------------------------------ */
+
+/* Fondo del sidebar */
+body.admin-body .admin-sidebar,
+body.esp-body .esp-sidebar,
+body.con-body .con-sidebar,
+body.rec-body .rec-sidebar {
+    background: var(--tema-sidebar-bg);
+}
+
+/* Las claras tenían borde derecho claro; se adapta al navy */
+body.esp-body .esp-sidebar,
+body.con-body .con-sidebar,
+body.rec-body .rec-sidebar {
+    border-right-color: var(--tema-sidebar-hover);
+}
+
+/* Logo */
+body.admin-body .admin-logo,
+body.esp-body .esp-logo,
+body.con-body .con-logo,
+body.rec-body .rec-logo {
+    color: #ffffff;
+}
+
+body.esp-body .esp-logo,
+body.con-body .con-logo,
+body.rec-body .rec-logo {
+    border-bottom-color: var(--tema-sidebar-hover);
+}
+
+body.admin-body .admin-logo .icono-logo,
+body.esp-body .esp-logo span,
+body.con-body .con-logo span,
+body.rec-body .rec-logo span {
+    background: var(--tema-sidebar-icono-bg);
+    color: var(--tema-sidebar-marca);
+}
+
+/* Navegación */
+body.admin-body .admin-nav a,
+body.esp-body .esp-nav a,
+body.con-body .con-nav a,
+body.rec-body .rec-nav a {
+    color: var(--tema-sidebar-texto);
+}
+
+body.admin-body .admin-nav a:hover,
+body.esp-body .esp-nav a:hover,
+body.con-body .con-nav a:hover,
+body.rec-body .rec-nav a:hover {
+    background: var(--tema-sidebar-hover);
+    color: #ffffff;
+}
+
+body.admin-body .admin-nav a.activo,
+body.esp-body .esp-nav a.activo,
+body.con-body .con-nav a.activo,
+body.rec-body .rec-nav a.activo {
+    background: var(--tema-sidebar-activo);
+    color: #ffffff;
+}
+
+body.admin-body .admin-nav-seccion,
+body.esp-body .esp-nav-seccion,
+body.con-body .con-nav-seccion,
+body.rec-body .rec-nav-seccion {
+    color: var(--tema-sidebar-seccion);
+}
+
+/* Marca "punto activo" / "En línea": teal -> un solo azul */
+body.admin-body .admin-nav .punto-activo {
+    background: var(--tema-sidebar-marca);
+}
+
+body.admin-body .admin-sidebar-footer .estado-linea {
+    color: var(--tema-sidebar-marca);
+}
+
+body.admin-body .admin-sidebar-footer .estado-linea::before {
+    background: var(--tema-sidebar-marca);
+}
+
+/* Footer del sidebar (perfil de usuario) */
+body.admin-body .admin-sidebar-footer,
+body.esp-body .esp-sidebar-footer,
+body.con-body .con-sidebar-footer,
+body.rec-body .rec-sidebar-footer {
+    border-top-color: #1c2c40;
+    color: var(--tema-sidebar-texto);
+}
+
+body.admin-body .admin-sidebar-footer .avatar-mini,
+body.esp-body .esp-avatar,
+body.con-body .con-avatar,
+body.rec-body .rec-avatar {
+    background: #3b82f6;
+    color: #ffffff;
+}
+
+body.esp-body .esp-estado,
+body.con-body .con-estado,
+body.rec-body .rec-estado {
+    color: var(--tema-sidebar-marca);
+}

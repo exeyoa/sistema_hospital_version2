@@ -1,13 +1,13 @@
 <?php
-session_start();
+require_once __DIR__ . '/../config/sesion.php';
 
-if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'admin') {
-    header('Location: login.php');
-    exit;
-}
+// Protección de sesión (igual que en admin.php)
+verificarSesion(['admin']);
 
 require_once __DIR__ . '/../config/conexion.php';
 require_once __DIR__ . '/_iconos.php';
+
+$csrfToken = generarTokenCSRF();
 
 // -----------------------------------------------------------
 // Estadísticas rápidas de médicos
@@ -50,6 +50,7 @@ function iniciales($nombre, $apellido) {
     <title>Médicos</title>
     <link rel="stylesheet" href="../css/estilo.css">
     <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/admin_tema.css">
 </head>
 <body class="admin-body">
 
@@ -180,7 +181,7 @@ function iniciales($nombre, $apellido) {
                             $colorAvatar = ['#2563eb', '#16a34a', '#7c3aed', '#d97706', '#0891b2'][$m['id_usuario'] % 5];
                         ?>
                         <tr>
-                            <td>
+                            <td data-label="Médico">
                                 <div class="celda-nombre">
                                     <div class="avatar-usuario" style="background: <?php echo $colorAvatar; ?>;">
                                         <?php echo htmlspecialchars($iniciales); ?>
@@ -190,28 +191,34 @@ function iniciales($nombre, $apellido) {
                                     </div>
                                 </div>
                             </td>
-                            <td><?php echo htmlspecialchars($m['nombre_especialidad'] ?? '—'); ?></td>
-                            <td><?php echo htmlspecialchars($m['numero_colegiado'] ?? '—'); ?></td>
-                            <td><?php echo htmlspecialchars($m['correo']); ?></td>
-                            <td>
+                            <td data-label="Especialidad"><?php echo htmlspecialchars($m['nombre_especialidad'] ?? '—'); ?></td>
+                            <td data-label="Colegiado"><?php echo htmlspecialchars($m['numero_colegiado'] ?? '—'); ?></td>
+                            <td data-label="Correo"><?php echo htmlspecialchars($m['correo']); ?></td>
+                            <td data-label="Estado">
                                 <?php if ($m['activo']): ?>
                                     <span class="estado-punto estado-activo">Activo</span>
                                 <?php else: ?>
                                     <span class="estado-punto estado-inactivo">Inactivo</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="acciones-fila">
-                                <a href="editar_usuario.php?id=<?php echo $m['id_usuario']; ?>" title="Editar"><?php echo icono('editar', 15); ?></a>
+                            <td data-label="Acciones" class="acciones-fila">
+                                <a href="editar_usuario.php?id=<?php echo $m['id_usuario']; ?>&volver=medicos" title="Editar"><?php echo icono('editar', 15); ?></a>
                                 <?php if ($m['activo']): ?>
-                                    <a href="cambiar_estado_usuario.php?id=<?php echo $m['id_usuario']; ?>&volver=medicos" title="Desactivar"
-                                       onclick="return confirm('¿Desactivar a Dr(a). <?php echo htmlspecialchars(addslashes($m['nombre'] . ' ' . $m['apellido'])); ?>?');">
-                                        <?php echo icono('candado', 15); ?>
-                                    </a>
+                                    <form method="post" action="cambiar_estado_usuario.php" class="accion-fila-form"
+                                          onsubmit="return confirm('¿Desactivar a Dr(a). <?php echo htmlspecialchars(addslashes($m['nombre'] . ' ' . $m['apellido'])); ?>?');">
+                                        <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                                        <input type="hidden" name="id" value="<?php echo $m['id_usuario']; ?>">
+                                        <input type="hidden" name="volver" value="medicos">
+                                        <button type="submit" class="btn-icono-fila" title="Desactivar"><?php echo icono('candado', 15); ?></button>
+                                    </form>
                                 <?php else: ?>
-                                    <a href="cambiar_estado_usuario.php?id=<?php echo $m['id_usuario']; ?>&volver=medicos" title="Activar"
-                                       onclick="return confirm('¿Activar a Dr(a). <?php echo htmlspecialchars(addslashes($m['nombre'] . ' ' . $m['apellido'])); ?>?');">
-                                        <?php echo icono('escudo', 15); ?>
-                                    </a>
+                                    <form method="post" action="cambiar_estado_usuario.php" class="accion-fila-form"
+                                          onsubmit="return confirm('¿Activar a Dr(a). <?php echo htmlspecialchars(addslashes($m['nombre'] . ' ' . $m['apellido'])); ?>?');">
+                                        <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                                        <input type="hidden" name="id" value="<?php echo $m['id_usuario']; ?>">
+                                        <input type="hidden" name="volver" value="medicos">
+                                        <button type="submit" class="btn-icono-fila" title="Activar"><?php echo icono('escudo', 15); ?></button>
+                                    </form>
                                 <?php endif; ?>
                             </td>
                         </tr>

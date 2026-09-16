@@ -7,97 +7,161 @@ verificarSesion(['admin']);
 require_once __DIR__ . '/_iconos.php'; // función icono() para el HTML
 
 $csrfToken = generarTokenCSRF();
-if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'admin') {
-    header('Location: login.php');
-    exit;
-}
 
 require_once __DIR__ . '/../config/conexion.php'; // expone $conexion (PDO)
 require_once __DIR__ . '/../config/politica_password.php';
 
-$error = '';
+// A qué página regresar después de guardar: admin.php (usuarios) o admin_medicos.php
+$volver = ($_GET['volver'] ?? '') === 'medicos' ? 'admin_medicos.php' : 'admin.php';
+$volverParam = $volver === 'admin_medicos.php' ? '&volver=medicos' : '';
+
+$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+if ($id <= 0) {
+    header("Location: $volver?error=noEncontrado");
+    exit;
+}
+
+// Cargamos el usuario que se va a editar (con su rol). Si es médico,
+// también traemos su especialidad y número de colegiado para precargarlo.
+$stmt = $conexion->prepare(
+    "SELECT u.*, r.nombre_rol, m.id_medico, m.id_especialidad, m.numero_colegiado
+     FROM usuarios u
+     INNER JOIN roles r ON u.id_rol = r.id_rol
+     LEFT JOIN medicos m ON m.id_usuario = u.id_usuario
+     WHERE u.id_usuario = :id"
+);
+$stmt->execute([':id' => $id]);
+$usuarioActual = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$usuarioActual) {
+    header("Location: $volver?error=noEncontrado");
+    exit;
+}
 
 $roles = $conexion->query("SELECT id_rol, nombre_rol FROM roles ORDER BY nombre_rol")->fetchAll(PDO::FETCH_ASSOC);
 $especialidades = $conexion->query("SELECT id_especialidad, nombre_especialidad FROM especialidades ORDER BY nombre_especialidad")->fetchAll(PDO::FETCH_ASSOC);
 
+$error = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // 0) Validación CSRF (RNF-08) — revierte solicitudes no autorizadas
+    // 1) Validación CSRF (RNF-08)
     if (!validarTokenCSRF($_POST['csrf_token'] ?? null)) {
-        header('Location: crear_usuario.php');
+        header("Location: editar_usuario.php?id=$id$volverParam");
         exit;
     }
 
-    $nombre    = trim($_POST['nombre'] ?? '');
-    $apellido  = trim($_POST['apellido'] ?? '');
-    $correo    = trim($_POST['correo'] ?? '');
-    $usuario   = trim($_POST['usuario'] ?? '');
-    $password  = $_POST['password'] ?? '';
-    $id_rol    = $_POST['id_rol'] ?? '';
+    $nombre      = trim($_POST['nombre'] ?? '');
+    $apellido    = trim($_POST['apellido'] ?? '');
+    $correo      = trim($_POST['correo'] ?? '');
+    $usuario     = trim($_POST['usuario'] ?? '');
+    $password    = $_POST['password'] ?? '';
+    $id_rol      = $_POST['id_rol'] ?? '';
     $id_especialidad = $_POST['id_especialidad'] ?? '';
     $numero_colegiado = trim($_POST['numero_colegiado'] ?? '');
-    $activo = isset($_POST['activo']) ? 1 : 0;
+    $activo      = isset($_POST['activo']) ? 1 : 0;
 
     // 2) Validaciones básicas
-    if ($nombre === '' || $apellido === '' || $correo === '' || $usuario === '' || $password === '' || $id_rol === '') {
+    if ($nombre === '' || $apellido === '' || $correo === '' || $usuario === '' || $id_rol === '') {
         $error = 'Todos los campos marcados son obligatorios.';
     } elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
         $error = 'El correo no tiene un formato válido.';
-    } elseif ($erroresPolitica = validarPoliticaPassword($password)) {
+    } elseif ($password !== '' && ($erroresPolitica = validarPoliticaPassword($password))) {
         $error = 'La contraseña debe ' . implode(', ', $erroresPolitica) . '.';
     } else {
-        // 4) Verificamos que el correo y el usuario no existan ya
-        $stmt = $conexion->prepare("SELECT COUNT(*) FROM usuarios WHERE correo = :correo OR usuario = :usuario");
-        $stmt->execute([':correo' => $correo, ':usuario' => $usuario]);
+        // 3) Nombre del rol elegido (para validar médico y el cambio de rol)
+        $stmtRol = $conexion->prepare("SELECT nombre_rol FROM roles WHERE id_rol = :id_rol");
+        $stmtRol->execute([':id_rol' => $id_rol]);
+        $nombreRolNuevo = $stmtRol->fetchColumn();
 
-        if ($stmt->fetchColumn() > 0) {
-            $error = 'Ya existe un usuario con ese correo o nombre de usuario.';
+        // 4) Regla de negocio: un usuario con fila en medicoes no puede
+        //    pasar a un rol no-médico (evita filas huérfanas). Debe
+        //    desactivarse primero o mantener el rol de médico.
+        $tieneFilaMedico = $usuarioActual['id_medico'] !== null;
+        if ($tieneFilaMedico && $nombreRolNuevo !== 'medico') {
+            $error = 'No se puede cambiar el rol de un médico activo; desactive el usuario primero o mantenga el rol de médico.';
+        } elseif ($nombreRolNuevo === 'medico' && ($id_especialidad === '' || $numero_colegiado === '')) {
+            $error = 'Debes indicar especialidad y número de colegiado para un médico.';
         } else {
-            // 5) Validación de los campos propios del médico (fuera de la transacción)
-            $stmtRol = $conexion->prepare("SELECT nombre_rol FROM roles WHERE id_rol = :id_rol");
-            $stmtRol->execute([':id_rol' => $id_rol]);
-            $nombreRolElegido = $stmtRol->fetchColumn();
+            // 5) Verificamos que el correo y el usuario no existan YA con otro id
+            $stmt = $conexion->prepare(
+                "SELECT COUNT(*) FROM usuarios
+                 WHERE (correo = :correo OR usuario = :usuario)
+                   AND id_usuario <> :id"
+            );
+            $stmt->execute([':correo' => $correo, ':usuario' => $usuario, ':id' => $id]);
 
-            if ($nombreRolElegido === 'medico' && ($id_especialidad === '' || $numero_colegiado === '')) {
-                $error = 'Debes indicar especialidad y número de colegiado para un médico.';
+            if ($stmt->fetchColumn() > 0) {
+                $error = 'Ya existe un usuario con ese correo o nombre de usuario.';
             } else {
-                // 6) Todo bien -> insertamos
+                // 6) Todo validado -> actualizamos en una transacción
                 try {
                     $conexion->beginTransaction();
 
-                    $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-
-                    $stmt = $conexion->prepare(
-                        "INSERT INTO usuarios (nombre, apellido, correo, usuario, password_hash, id_rol, activo, fecha_creacion)
-                         VALUES (:nombre, :apellido, :correo, :usuario, :password_hash, :id_rol, :activo, NOW())"
-                    );
-                    $stmt->execute([
-                        ':nombre' => $nombre,
+                    // Contraseña: solo se reescribe si el admin la escribió
+                    $sqlUpdate = "UPDATE usuarios SET
+                                    nombre = :nombre,
+                                    apellido = :apellido,
+                                    correo = :correo,
+                                    usuario = :usuario,
+                                    id_rol = :id_rol,
+                                    activo = :activo
+                                  WHERE id_usuario = :id";
+                    $params = [
+                        ':nombre'   => $nombre,
                         ':apellido' => $apellido,
-                        ':correo' => $correo,
-                        ':usuario' => $usuario,
-                        ':password_hash' => $passwordHash,
-                        ':id_rol' => $id_rol,
-                        ':activo' => $activo,
-                    ]);
+                        ':correo'   => $correo,
+                        ':usuario'  => $usuario,
+                        ':id_rol'   => $id_rol,
+                        ':activo'   => $activo,
+                        ':id'       => $id,
+                    ];
 
-                    $idUsuarioNuevo = $conexion->lastInsertId();
+                    if ($password !== '') {
+                        $sqlUpdate = "UPDATE usuarios SET
+                                        nombre = :nombre,
+                                        apellido = :apellido,
+                                        correo = :correo,
+                                        usuario = :usuario,
+                                        password_hash = :password_hash,
+                                        id_rol = :id_rol,
+                                        activo = :activo
+                                      WHERE id_usuario = :id";
+                        $params[':password_hash'] = password_hash($password, PASSWORD_BCRYPT);
+                    }
 
-                    // Si el rol elegido corresponde a 'medico', también guardamos en la tabla medicos
-                    if ($nombreRolElegido === 'medico') {
-                        $stmt = $conexion->prepare(
-                            "INSERT INTO medicos (id_usuario, id_especialidad, numero_colegiado)
-                             VALUES (:id_usuario, :id_especialidad, :numero_colegiado)"
-                        );
-                        $stmt->execute([
-                            ':id_usuario' => $idUsuarioNuevo,
-                            ':id_especialidad' => $id_especialidad,
-                            ':numero_colegiado' => $numero_colegiado,
-                        ]);
+                    $stmt = $conexion->prepare($sqlUpdate);
+                    $stmt->execute($params);
+
+                    // Si el rol final es médico, actualizamos (o insertamos) su fila en medicos
+                    if ($nombreRolNuevo === 'medico') {
+                        if ($tieneFilaMedico) {
+                            $stmt = $conexion->prepare(
+                                "UPDATE medicos
+                                 SET id_especialidad = :id_especialidad,
+                                     numero_colegiado = :numero_colegiado
+                                 WHERE id_usuario = :id"
+                            );
+                            $stmt->execute([
+                                ':id_especialidad'   => $id_especialidad,
+                                ':numero_colegiado'  => $numero_colegiado,
+                                ':id'                => $id,
+                            ]);
+                        } else {
+                            $stmt = $conexion->prepare(
+                                "INSERT INTO medicos (id_usuario, id_especialidad, numero_colegiado)
+                                 VALUES (:id_usuario, :id_especialidad, :numero_colegiado)"
+                            );
+                            $stmt->execute([
+                                ':id_usuario'       => $id,
+                                ':id_especialidad'  => $id_especialidad,
+                                ':numero_colegiado' => $numero_colegiado,
+                            ]);
+                        }
                     }
 
                     $conexion->commit();
-                    header('Location: admin.php?creado=1');
+                    header("Location: $volver?editado=1");
                     exit;
 
                 } catch (PDOException $e) {
@@ -105,18 +169,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if ($e->getCode() === '23000') {
                         $error = 'Ya existe un usuario con ese correo o nombre de usuario.';
                     } else {
-                        error_log('Error al crear usuario: ' . $e->getMessage());
-                        $error = 'No se pudo crear el usuario. Intenta nuevamente o contacta al administrador del sistema.';
+                        error_log('Error al actualizar usuario: ' . $e->getMessage());
+                        $error = 'No se pudo actualizar el usuario. Intenta nuevamente o contacta al administrador del sistema.';
                     }
-                } catch (Exception $e) {
-                    $conexion->rollBack();
-                    error_log('Error al crear usuario: ' . $e->getMessage());
-                    $error = 'No se pudo crear el usuario. Intenta nuevamente o contacta al administrador del sistema.';
                 }
             }
         }
     }
 }
+
+// Valores para el formulario: los enviados (si hay error) o los actuales
+$vNombre   = $_POST['nombre'] ?? $usuarioActual['nombre'];
+$vApellido = $_POST['apellido'] ?? $usuarioActual['apellido'];
+$vCorreo   = $_POST['correo'] ?? $usuarioActual['correo'];
+$vUsuario  = $_POST['usuario'] ?? $usuarioActual['usuario'];
+$vIdRol    = $_POST['id_rol'] ?? $usuarioActual['id_rol'];
+$vEsp      = $_POST['id_especialidad'] ?? $usuarioActual['id_especialidad'] ?? '';
+$vCole     = $_POST['numero_colegiado'] ?? $usuarioActual['numero_colegiado'] ?? '';
+$vActivo   = isset($_POST['activo']) ? true : (bool) $usuarioActual['activo'];
 
 function iniciales($nombre, $apellido) {
     $n = mb_strtoupper(mb_substr($nombre, 0, 1));
@@ -129,7 +199,7 @@ function iniciales($nombre, $apellido) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuevo Usuario</title>
+    <title>Editar Usuario</title>
     <link rel="stylesheet" href="../css/estilo.css">
     <link rel="stylesheet" href="../css/admin.css">
 </head>
@@ -175,10 +245,10 @@ function iniciales($nombre, $apellido) {
 
         <div class="admin-topbar">
             <div class="admin-topbar-izquierda">
-                <a href="admin.php" class="admin-back-btn"><?php echo icono('flecha-izq', 18); ?></a>
+                <a href="<?php echo $volver; ?>" class="admin-back-btn"><?php echo icono('flecha-izq', 18); ?></a>
                 <div>
-                    <h1>Nuevo usuario</h1>
-                    <p class="admin-topbar-subtitulo">Crea una nueva cuenta de usuario en el sistema</p>
+                    <h1>Editar usuario</h1>
+                    <p class="admin-topbar-subtitulo">Actualiza los datos de la cuenta en el sistema</p>
                 </div>
             </div>
             <div class="admin-topbar-derecha">
@@ -195,10 +265,10 @@ function iniciales($nombre, $apellido) {
                 <div class="form-card">
 
                     <div class="form-card-header">
-                        <div class="form-card-header-icono"><?php echo icono('usuario-mas', 26); ?></div>
+                        <div class="form-card-header-icono"><?php echo icono('editar', 26); ?></div>
                         <div>
-                            <h2>Registrar nuevo usuario</h2>
-                            <p>Completa los datos para crear una cuenta de médico, recepcionista o administrador.</p>
+                            <h2>Editar datos del usuario</h2>
+                            <p>Modifica los datos de <?php echo htmlspecialchars($usuarioActual['nombre'] . ' ' . $usuarioActual['apellido']); ?>.</p>
                         </div>
                     </div>
 
@@ -206,24 +276,8 @@ function iniciales($nombre, $apellido) {
                         <div class="alerta alerta-error"><?php echo htmlspecialchars($error); ?></div>
                     <?php endif; ?>
 
-                    <form method="POST" action="crear_usuario.php" id="formNuevoUsuario">
+                    <form method="POST" action="editar_usuario.php?id=<?php echo $id; ?><?php echo $volverParam; ?>" id="formEditarUsuario">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-
-                        <div class="form-fila una-columna">
-                            <div class="form-grupo">
-                                <label for="cedula_buscar"><?php echo icono('archivo', 15); ?> Cédula (buscar paciente)</label>
-                                <div style="display:flex; gap:8px; align-items:stretch;">
-                                    <div class="campo-icono" style="flex:1;">
-                                        <?php echo icono('archivo', 16); ?>
-                                        <input type="text" id="cedula_buscar" placeholder="Ejemplo: 8-123-456" autocomplete="off">
-                                    </div>
-                                    <button type="button" id="btnBuscarCedula" class="btn-secundario">Buscar</button>
-                                </div>
-                                <div class="form-ayuda" id="avisoCedula">
-                                    Si la cédula ya está registrada como paciente, se rellenarán nombre, apellido y correo.
-                                </div>
-                            </div>
-                        </div>
 
                         <div class="form-fila">
                             <div class="form-grupo">
@@ -231,7 +285,7 @@ function iniciales($nombre, $apellido) {
                                 <div class="campo-icono">
                                     <?php echo icono('usuario', 16); ?>
                                     <input type="text" id="nombre" name="nombre" placeholder="Ingresa el nombre" required
-                                           value="<?php echo htmlspecialchars($_POST['nombre'] ?? ''); ?>">
+                                           value="<?php echo htmlspecialchars($vNombre); ?>">
                                 </div>
                             </div>
                             <div class="form-grupo">
@@ -239,7 +293,7 @@ function iniciales($nombre, $apellido) {
                                 <div class="campo-icono">
                                     <?php echo icono('usuario', 16); ?>
                                     <input type="text" id="apellido" name="apellido" placeholder="Ingresa el apellido" required
-                                           value="<?php echo htmlspecialchars($_POST['apellido'] ?? ''); ?>">
+                                           value="<?php echo htmlspecialchars($vApellido); ?>">
                                 </div>
                             </div>
                         </div>
@@ -250,7 +304,7 @@ function iniciales($nombre, $apellido) {
                                 <div class="campo-icono">
                                     <?php echo icono('correo', 16); ?>
                                     <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com" required
-                                           value="<?php echo htmlspecialchars($_POST['correo'] ?? ''); ?>">
+                                           value="<?php echo htmlspecialchars($vCorreo); ?>">
                                 </div>
                             </div>
                             <div class="form-grupo">
@@ -258,16 +312,16 @@ function iniciales($nombre, $apellido) {
                                 <div class="campo-icono">
                                     <?php echo icono('usuario', 16); ?>
                                     <input type="text" id="usuario" name="usuario" placeholder="Ingresa el nombre de usuario" required
-                                           value="<?php echo htmlspecialchars($_POST['usuario'] ?? ''); ?>">
+                                           value="<?php echo htmlspecialchars($vUsuario); ?>">
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-fila">
                             <div class="form-grupo">
-                                <label for="password">Contraseña</label>
-                                <input type="password" id="password" name="password" required minlength="8">
-                                <div class="form-ayuda">Mínimo 8 caracteres. Se guarda cifrada, nunca en texto plano.</div>
+                                <label for="password">Contraseña (opcional)</label>
+                                <input type="password" id="password" name="password" placeholder="Déjala vacía para no cambiarla">
+                                <div class="form-ayuda">Si la dejas vacía, la contraseña actual se mantiene. Mínimo 8 caracteres.</div>
                             </div>
                             <div class="form-grupo">
                                 <label for="id_rol"><?php echo icono('escudo', 15); ?> Rol</label>
@@ -278,7 +332,7 @@ function iniciales($nombre, $apellido) {
                                         <?php foreach ($roles as $r): ?>
                                             <option value="<?php echo $r['id_rol']; ?>"
                                                 data-rol="<?php echo htmlspecialchars($r['nombre_rol']); ?>"
-                                                <?php echo (($_GET['rol'] ?? '') === $r['nombre_rol']) ? 'selected' : ''; ?>>
+                                                <?php echo ((string) $r['id_rol'] === (string) $vIdRol) ? 'selected' : ''; ?>>
                                                 <?php echo htmlspecialchars(ucfirst($r['nombre_rol'])); ?>
                                             </option>
                                         <?php endforeach; ?>
@@ -286,8 +340,6 @@ function iniciales($nombre, $apellido) {
                                 </div>
                             </div>
                         </div>
-
-                        <div class="form-ayuda"><?php echo icono('escudo', 13); ?> Mínimo 8 caracteres. Se guarda cifrada, nunca en texto plano.</div>
 
                         <!-- Solo se muestra cuando el rol elegido es "medico" -->
                         <div id="camposMedico" style="display:none;">
@@ -302,7 +354,8 @@ function iniciales($nombre, $apellido) {
                                         <select id="id_especialidad" name="id_especialidad">
                                             <option value="">Selecciona especialidad</option>
                                             <?php foreach ($especialidades as $esp): ?>
-                                                <option value="<?php echo $esp['id_especialidad']; ?>">
+                                                <option value="<?php echo $esp['id_especialidad']; ?>"
+                                                    <?php echo ((string) $esp['id_especialidad'] === (string) $vEsp) ? 'selected' : ''; ?>>
                                                     <?php echo htmlspecialchars($esp['nombre_especialidad']); ?>
                                                 </option>
                                             <?php endforeach; ?>
@@ -313,7 +366,8 @@ function iniciales($nombre, $apellido) {
                                     <label for="numero_colegiado"><?php echo icono('archivo', 15); ?> Número de colegiado</label>
                                     <div class="campo-icono">
                                         <?php echo icono('archivo', 16); ?>
-                                        <input type="text" id="numero_colegiado" name="numero_colegiado" placeholder="Ingresa número de colegiado">
+                                        <input type="text" id="numero_colegiado" name="numero_colegiado" placeholder="Ingresa número de colegiado"
+                                               value="<?php echo htmlspecialchars($vCole); ?>">
                                     </div>
                                 </div>
                             </div>
@@ -329,14 +383,14 @@ function iniciales($nombre, $apellido) {
                                 </div>
                             </div>
                             <label class="interruptor">
-                                <input type="checkbox" name="activo" checked>
+                                <input type="checkbox" name="activo" <?php echo $vActivo ? 'checked' : ''; ?>>
                                 <span class="deslizador"></span>
                             </label>
                         </div>
 
                         <div class="form-acciones">
-                            <a href="admin.php" class="btn-secundario">Cancelar</a>
-                            <button type="submit" class="btn-primario"><?php echo icono('guardar', 16); ?> Guardar usuario</button>
+                            <a href="<?php echo $volver; ?>" class="btn-secundario">Cancelar</a>
+                            <button type="submit" class="btn-primario"><?php echo icono('guardar', 16); ?> Guardar cambios</button>
                         </div>
                     </form>
                 </div>
@@ -357,73 +411,6 @@ function mostrarCamposMedico() {
     document.getElementById('camposMedico').style.display = (rolTexto === 'medico') ? 'block' : 'none';
 }
 document.addEventListener('DOMContentLoaded', mostrarCamposMedico);
-
-const patronCedula = /^(?:[A-Z]{1,2}-)?\d{1,4}-\d{1,4}(?:-\d{1,4})?$/;
-
-function mostrarAvisoCedula(mensaje, tipo) {
-    const aviso = document.getElementById('avisoCedula');
-    if (!aviso) return;
-    aviso.textContent = mensaje;
-    if (tipo === 'ok') {
-        aviso.style.color = '#16a34a';
-    } else if (tipo === 'error') {
-        aviso.style.color = '#dc2626';
-    } else {
-        aviso.style.color = '';
-    }
-}
-
-function buscarCedula() {
-    const inputCedula = document.getElementById('cedula_buscar');
-    const cedula = inputCedula.value.trim();
-
-    if (cedula === '') {
-        mostrarAvisoCedula('', '');
-        return;
-    }
-    if (!patronCedula.test(cedula)) {
-        mostrarAvisoCedula('Formato de cédula no válido (ejemplo: 8-123-456).', 'error');
-        return;
-    }
-
-    const tokenCsrf = document.querySelector('#formNuevoUsuario input[name="csrf_token"]').value;
-    const datos = new FormData();
-    datos.append('csrf_token', tokenCsrf);
-    datos.append('cedula', cedula);
-
-    mostrarAvisoCedula('Buscando...', '');
-
-    fetch('ajax/buscar_cedula.php', { method: 'POST', body: datos })
-        .then(function (respuesta) { return respuesta.json(); })
-        .then(function (resultado) {
-            if (resultado.encontrado) {
-                document.getElementById('nombre').value = resultado.nombre || '';
-                document.getElementById('apellido').value = resultado.apellido || '';
-                document.getElementById('correo').value = resultado.correo || '';
-                mostrarAvisoCedula('Paciente encontrado, datos rellenados. Puedes editarlos si lo necesitas.', 'ok');
-            } else {
-                mostrarAvisoCedula('No se encontró ningún paciente con esa cédula, complete manualmente.', '');
-            }
-        })
-        .catch(function () {
-            mostrarAvisoCedula('No se pudo realizar la búsqueda. Intenta nuevamente.', 'error');
-        });
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    const btn = document.getElementById('btnBuscarCedula');
-    const inputCedula = document.getElementById('cedula_buscar');
-    if (btn) {
-        btn.addEventListener('click', buscarCedula);
-    }
-    if (inputCedula) {
-        inputCedula.addEventListener('blur', function () {
-            if (inputCedula.value.trim() !== '') {
-                buscarCedula();
-            }
-        });
-    }
-});
 </script>
 
 </body>

@@ -118,6 +118,19 @@ VALUES (
     'Continuar con dieta baja en sodio.'
 );
 
+-- ------------------------------------------------------------
+-- 5) EXTRA: DATOS PARA LA VISTA ADMIN "CONSULTAS"
+--    Dos turnos de reserva con estados variados para que la
+--    sección global de consultas del administrador tenga
+--    contenido el día de la importación (usa NOW()/CURDATE()
+--    para que siempre sea el día actual).
+-- ------------------------------------------------------------
+INSERT INTO turnos (id_paciente, id_cita, numero_turno, tipo, estado, fecha)
+VALUES (@id_p2, NULL, 7, 'con_cita', 'en_espera', NOW());
+
+INSERT INTO turnos (id_paciente, id_cita, numero_turno, tipo, estado, fecha)
+VALUES (@id_p7, NULL, 8, 'espontaneo', 'en_consulta', NOW());
+
 -- ============================================================
 -- FIN DEL SCRIPT
 -- ============================================================

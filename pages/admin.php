@@ -11,6 +11,8 @@ verificarSesion(['admin']);
 require_once __DIR__ . '/../config/conexion.php'; // expone $conexion (PDO)
 require_once __DIR__ . '/_iconos.php';
 
+$csrfToken = generarTokenCSRF();
+
 // ---------------------------------------------------------------
 // 2) DATOS PARA LAS TARJETAS DE ESTADÍSTICAS (RF-09)
 // ---------------------------------------------------------------
@@ -91,6 +93,7 @@ function iniciales($nombre, $apellido) {
     <title>Panel de Administrador</title>
     <link rel="stylesheet" href="../css/estilo.css">
     <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/admin_tema.css">
 </head>
 <body class="admin-body">
 
@@ -165,7 +168,7 @@ function iniciales($nombre, $apellido) {
                 <div class="tarjeta-stat">
                     <div class="tarjeta-stat-encabezado">
                         <div class="tarjeta-stat-icono icono-verde"><?php echo icono('usuarios', 20); ?></div>
-                        <div class="tarjeta-stat-titulo">Pacientes activos</div>
+                        <div class="tarjeta-stat-titulo">Total pacientes</div>
                     </div>
                     <div class="tarjeta-stat-numero"><?php echo $totalPacientes; ?></div>
                     <div class="tarjeta-stat-pie">
@@ -195,6 +198,8 @@ function iniciales($nombre, $apellido) {
                     <div class="alerta alerta-exito">Estado del usuario actualizado.</div>
                 <?php elseif (isset($_GET['error']) && $_GET['error'] === 'noPuedesDesactivarte'): ?>
                     <div class="alerta alerta-error">No puedes desactivar tu propia cuenta mientras la tienes abierta.</div>
+                <?php elseif (isset($_GET['error']) && $_GET['error'] === 'noEncontrado'): ?>
+                    <div class="alerta alerta-error">Usuario no encontrado.</div>
                 <?php endif; ?>
                 <div class="tarjeta-usuarios-header">
                     <div>
@@ -236,8 +241,8 @@ function iniciales($nombre, $apellido) {
                             $colorAvatar = ['#2563eb', '#16a34a', '#7c3aed', '#d97706', '#0891b2'][$u['id_usuario'] % 5];
                         ?>
                         <tr>
-                            <td><?php echo $u['id_usuario']; ?></td>
-                            <td>
+                            <td data-label="ID"><?php echo $u['id_usuario']; ?></td>
+                            <td data-label="Nombre">
                                 <div class="celda-nombre">
                                     <div class="avatar-usuario" style="background: <?php echo $colorAvatar; ?>;">
                                         <?php echo htmlspecialchars($iniciales); ?>
@@ -248,30 +253,34 @@ function iniciales($nombre, $apellido) {
                                     </div>
                                 </div>
                             </td>
-                            <td><?php echo htmlspecialchars($u['correo']); ?></td>
-                            <td><?php echo htmlspecialchars($u['usuario']); ?></td>
-                            <td><span class="badge-rol <?php echo $rolClase; ?>"><?php echo htmlspecialchars($rolTexto); ?></span></td>
-                            <td>
+                            <td data-label="Correo"><?php echo htmlspecialchars($u['correo']); ?></td>
+                            <td data-label="Usuario"><?php echo htmlspecialchars($u['usuario']); ?></td>
+                            <td data-label="Rol"><span class="badge-rol <?php echo $rolClase; ?>"><?php echo htmlspecialchars($rolTexto); ?></span></td>
+                            <td data-label="Estado">
                                 <?php if ($u['activo']): ?>
                                     <span class="estado-punto estado-activo">Activo</span>
                                 <?php else: ?>
                                     <span class="estado-punto estado-inactivo">Inactivo</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="acciones-fila">
+                            <td data-label="Acciones" class="acciones-fila">
                                 <a href="editar_usuario.php?id=<?php echo $u['id_usuario']; ?>" title="Editar"><?php echo icono('editar', 15); ?></a>
                                 <?php if ($u['id_usuario'] == $_SESSION['id_usuario']): ?>
                                     <a href="#" title="No puedes desactivar tu propia cuenta" style="opacity:0.35; cursor:not-allowed;" onclick="return false;"><?php echo icono('candado', 15); ?></a>
                                 <?php elseif ($u['activo']): ?>
-                                    <a href="cambiar_estado_usuario.php?id=<?php echo $u['id_usuario']; ?>" title="Desactivar usuario"
-                                       onclick="return confirm('¿Desactivar a <?php echo htmlspecialchars(addslashes($u['nombre'] . ' ' . $u['apellido'])); ?>? No podrá iniciar sesión hasta que lo actives de nuevo.');">
-                                        <?php echo icono('candado', 15); ?>
-                                    </a>
+                                    <form method="post" action="cambiar_estado_usuario.php" class="accion-fila-form"
+                                          onsubmit="return confirm('¿Desactivar a <?php echo htmlspecialchars(addslashes($u['nombre'] . ' ' . $u['apellido'])); ?>? No podrá iniciar sesión hasta que lo actives de nuevo.');">
+                                        <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                                        <input type="hidden" name="id" value="<?php echo $u['id_usuario']; ?>">
+                                        <button type="submit" class="btn-icono-fila" title="Desactivar usuario"><?php echo icono('candado', 15); ?></button>
+                                    </form>
                                 <?php else: ?>
-                                    <a href="cambiar_estado_usuario.php?id=<?php echo $u['id_usuario']; ?>" title="Activar usuario"
-                                       onclick="return confirm('¿Activar a <?php echo htmlspecialchars(addslashes($u['nombre'] . ' ' . $u['apellido'])); ?>?');">
-                                        <?php echo icono('escudo', 15); ?>
-                                    </a>
+                                    <form method="post" action="cambiar_estado_usuario.php" class="accion-fila-form"
+                                          onsubmit="return confirm('¿Activar a <?php echo htmlspecialchars(addslashes($u['nombre'] . ' ' . $u['apellido'])); ?>?');">
+                                        <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                                        <input type="hidden" name="id" value="<?php echo $u['id_usuario']; ?>">
+                                        <button type="submit" class="btn-icono-fila" title="Activar usuario"><?php echo icono('escudo', 15); ?></button>
+                                    </form>
                                 <?php endif; ?>
                             </td>
                         </tr>

@@ -51,7 +51,8 @@ CREATE TABLE codigos_recuperacion (
 -- Catálogo de especialidades médicas
 CREATE TABLE especialidades (
     id_especialidad INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_especialidad VARCHAR(60) NOT NULL UNIQUE
+    nombre_especialidad VARCHAR(60) NOT NULL UNIQUE,
+    descripcion TEXT
 );
 
 -- Datos propios de cada médico, ligado a su cuenta de usuario
@@ -130,6 +131,8 @@ CREATE TABLE recetas (
     id_receta INT AUTO_INCREMENT PRIMARY KEY,
     id_consulta INT NOT NULL UNIQUE,
     fecha_emision DATETIME DEFAULT CURRENT_TIMESTAMP,
+    estado ENUM('activa','expirada') NOT NULL DEFAULT 'activa',
+    indicaciones TEXT NULL,
     FOREIGN KEY (id_consulta) REFERENCES consultas(id_consulta)
 );
 

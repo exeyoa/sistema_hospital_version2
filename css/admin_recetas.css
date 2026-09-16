@@ -1,0 +1,981 @@
+/* ============================================================
+   Sección Recetas Médicas (Panel Admin) - Tema claro independiente
+   Prefijo de clases: .rec-* (no colisiona con admin.css ni
+   admin_especialidades.css ni admin_consultas.css ni estilo.css)
+   ============================================================ */
+
+.rec-body {
+    --rec-fondo: #F5F7FA;
+    --rec-superficie: #FFFFFF;
+    --rec-borde: #E2E8F0;
+    --rec-texto: #0F172A;
+    --rec-texto-suave: #64748B;
+    --rec-acento: #0D9488;
+    --rec-acento-oscuro: #0F766E;
+    --rec-acento-suave: #CCFBF1;
+    --rec-exito: #16A34A;
+    --rec-exito-suave: #DCFCE7;
+    --rec-error: #DC2626;
+    --rec-error-suave: #FEE2E2;
+    --rec-ambra: #D97706;
+    --rec-radio: 12px;
+    margin: 0;
+    background: var(--rec-fondo);
+    color: var(--rec-texto);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+}
+
+.rec-body * {
+    box-sizing: border-box;
+}
+
+.oculto {
+    display: none !important;
+}
+
+/* ---------- Contenedor general ---------- */
+.rec-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    min-height: 100vh;
+}
+
+/* ---------- Sidebar (tema claro) ---------- */
+.rec-sidebar {
+    background: var(--rec-superficie);
+    border-right: 1px solid var(--rec-borde);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 14px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.rec-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--rec-acento);
+    padding: 0 8px 18px;
+    border-bottom: 1px solid var(--rec-borde);
+    margin-bottom: 14px;
+    white-space: nowrap;
+}
+
+.rec-logo span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--rec-acento-suave);
+    color: var(--rec-acento);
+    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    flex: 0 0 auto;
+}
+
+.rec-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.rec-nav-seccion {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--rec-texto-suave);
+    padding: 14px 10px 6px;
+}
+
+.rec-nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 9px;
+    color: var(--rec-texto);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.rec-nav a svg {
+    flex: 0 0 auto;
+    opacity: 0.75;
+}
+
+.rec-nav a:hover {
+    background: var(--rec-fondo);
+    color: var(--rec-acento);
+}
+
+.rec-nav a.activo {
+    background: var(--rec-acento);
+    color: #fff;
+    font-weight: 600;
+}
+
+.rec-nav a.activo svg {
+    opacity: 1;
+}
+
+.rec-sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 10px 0;
+    border-top: 1px solid var(--rec-borde);
+    margin-top: 14px;
+}
+
+.rec-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--rec-acento-suave);
+    color: var(--rec-acento);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex: 0 0 auto;
+}
+
+.rec-estado {
+    font-size: 0.75rem;
+    color: var(--rec-exito);
+    font-weight: 600;
+}
+
+/* ---------- Área principal ---------- */
+.rec-main {
+    padding: 22px 26px 30px;
+    max-width: 1240px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* ---------- Banner superior ---------- */
+.rec-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: linear-gradient(135deg, var(--rec-acento) 0%, #14B8A6 100%);
+    color: #fff;
+    border-radius: var(--rec-radio);
+    padding: 20px 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 6px 18px rgba(13, 148, 136, 0.25);
+}
+
+.rec-banner > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.18);
+    flex: 0 0 auto;
+}
+
+.rec-banner-titulo {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.rec-banner-desc {
+    margin: 2px 0 0;
+    font-size: 0.9rem;
+    opacity: 0.92;
+}
+
+/* ---------- Tarjetas de estadísticas ---------- */
+.rec-stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.rec-stat-card {
+    background: var(--rec-superficie);
+    border: 1px solid var(--rec-borde);
+    border-radius: var(--rec-radio);
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.rec-stat-encabezado {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.rec-stat-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    flex: 0 0 auto;
+}
+
+.rec-stat-icono.verde {
+    background: var(--rec-acento-suave);
+    color: var(--rec-acento);
+}
+
+.rec-stat-icono.azul {
+    background: #DBEAFE;
+    color: #2563EB;
+}
+
+.rec-stat-icono.morado {
+    background: #EDE9FE;
+    color: #7C3AED;
+}
+
+.rec-stat-titulo {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--rec-texto-suave);
+}
+
+.rec-stat-numero {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--rec-texto);
+    line-height: 1.1;
+}
+
+.rec-stat-pie {
+    font-size: 0.75rem;
+    color: var(--rec-texto-suave);
+    margin-top: 6px;
+}
+
+.rec-stat-pie span {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---------- Toolbar de filtros ---------- */
+.rec-toolbar {
+    background: var(--rec-superficie);
+    border: 1px solid var(--rec-borde);
+    border-radius: var(--rec-radio);
+    padding: 12px;
+    margin-bottom: 18px;
+}
+
+.rec-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.rec-filtro {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.rec-filtro label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--rec-texto-suave);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.rec-filtro input,
+.rec-filtro select {
+    padding: 9px 12px;
+    border: 1px solid var(--rec-borde);
+    border-radius: 9px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: var(--rec-fondo);
+    color: var(--rec-texto);
+}
+
+.rec-filtro input:focus,
+.rec-filtro select:focus {
+    outline: none;
+    border-color: var(--rec-acento);
+    box-shadow: 0 0 0 3px var(--rec-acento-suave);
+}
+
+.rec-filtro-buscar {
+    flex: 1 1 220px;
+}
+
+.rec-filtro-buscar input {
+    width: 100%;
+}
+
+.rec-filtro-boton {
+    display: flex;
+    gap: 8px;
+}
+
+/* ---------- Botones ---------- */
+.rec-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 15px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.rec-btn-primario {
+    background: var(--rec-acento);
+    color: #fff;
+}
+
+.rec-btn-primario:hover {
+    background: var(--rec-acento-oscuro);
+}
+
+.rec-btn-secundario {
+    background: var(--rec-fondo);
+    border-color: var(--rec-borde);
+    color: var(--rec-texto);
+}
+
+.rec-btn-secundario:hover {
+    border-color: var(--rec-texto-suave);
+}
+
+.rec-btn-peq {
+    padding: 7px 11px;
+    font-size: 0.8rem;
+}
+
+.rec-btn-ver {
+    background: var(--rec-acento-suave);
+    color: var(--rec-acento);
+}
+
+.rec-btn-ver:hover {
+    background: #99F6E4;
+}
+
+/* ---------- Mensajes del sistema ---------- */
+.rec-alerta {
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rec-alerta-exito {
+    background: var(--rec-exito-suave);
+    color: #15803D;
+    border: 1px solid #BBF7D0;
+}
+
+.rec-alerta-error {
+    background: var(--rec-error-suave);
+    color: #B91C1C;
+    border: 1px solid #FECACA;
+}
+
+/* ---------- Estructura de dos columnas ---------- */
+.rec-contenido {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+    align-items: start;
+}
+
+/* ---------- Tabla de recetas ---------- */
+.rec-tabla-contenedor {
+    background: var(--rec-superficie);
+    border: 1px solid var(--rec-borde);
+    border-radius: var(--rec-radio);
+    overflow: hidden;
+}
+
+.rec-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+.rec-tabla th {
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--rec-texto-suave);
+    background: #F8FAFC;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--rec-borde);
+}
+
+.rec-tabla td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--rec-borde);
+    vertical-align: middle;
+}
+
+.rec-tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.rec-tabla tbody tr {
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.rec-tabla tbody tr:hover {
+    background: #F8FAFC;
+}
+
+.rec-tabla tbody tr.rec-fila-activa {
+    background: var(--rec-acento-suave);
+}
+
+.rec-tabla tbody tr.rec-fila-activa:hover {
+    background: var(--rec-acento-suave);
+}
+
+.rec-tabla-paciente {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rec-tabla-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--rec-acento-suave);
+    color: var(--rec-acento);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    flex: 0 0 auto;
+}
+
+.rec-tabla-nombre strong {
+    display: block;
+    color: var(--rec-texto);
+    font-size: 0.9rem;
+}
+
+.rec-tabla-nombre span {
+    font-size: 0.78rem;
+    color: var(--rec-texto-suave);
+}
+
+.rec-vacio {
+    padding: 26px !important;
+    text-align: center;
+    color: var(--rec-texto-suave);
+}
+
+/* ---------- Badges de estado ---------- */
+.rec-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.rec-badge::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.rec-badge-activa {
+    background: var(--rec-exito-suave);
+    color: var(--rec-exito);
+    border: 1px solid #BBF7D0;
+}
+
+.rec-badge-expirada {
+    background: var(--rec-error-suave);
+    color: var(--rec-error);
+    border: 1px solid #FECACA;
+}
+
+/* ---------- Paginación ---------- */
+.rec-paginacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px;
+    flex-wrap: wrap;
+}
+
+.rec-paginacion a,
+.rec-paginacion span {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--rec-texto);
+    background: var(--rec-fondo);
+    border: 1px solid var(--rec-borde);
+}
+
+.rec-paginacion a:hover {
+    border-color: var(--rec-acento);
+    color: var(--rec-acento);
+}
+
+.rec-paginacion .rec-pag-actual {
+    background: var(--rec-acento);
+    color: #fff;
+    border-color: var(--rec-acento);
+}
+
+.rec-paginacion .rec-pag-info {
+    background: none;
+    border: none;
+    color: var(--rec-texto-suave);
+    cursor: default;
+}
+
+/* ---------- Panel lateral de detalle ---------- */
+.rec-panel-detalle {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.rec-detalle-card {
+    background: var(--rec-superficie);
+    border: 1px solid var(--rec-borde);
+    border-radius: var(--rec-radio);
+    padding: 18px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    position: sticky;
+    top: 22px;
+}
+
+.rec-detalle-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.rec-detalle-numero {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rec-detalle-icono {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--rec-acento-suave);
+    color: var(--rec-acento);
+    flex: 0 0 auto;
+}
+
+.rec-detalle-titulo {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.rec-detalle-sub {
+    font-size: 0.75rem;
+    color: var(--rec-texto-suave);
+}
+
+.rec-dato {
+    background: var(--rec-fondo);
+    border: 1px solid var(--rec-borde);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+}
+
+.rec-dato-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--rec-texto-suave);
+    margin-bottom: 3px;
+}
+
+.rec-dato-valor {
+    font-size: 0.92rem;
+    color: var(--rec-texto);
+    margin: 0;
+    white-space: pre-line;
+}
+
+.rec-datos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* ---------- Sección medicamentos del detalle ---------- */
+.rec-med-titulo {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--rec-texto);
+    margin: 4px 0 10px;
+}
+
+.rec-med-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.rec-med-item {
+    border: 1px solid var(--rec-borde);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: var(--rec-superficie);
+}
+
+.rec-med-nombre {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--rec-texto);
+}
+
+.rec-med-pres {
+    font-size: 0.75rem;
+    color: var(--rec-texto-suave);
+}
+
+.rec-med-linea {
+    font-size: 0.82rem;
+    color: var(--rec-texto);
+    margin-top: 4px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+}
+
+/* ---------- Indicaciones ---------- */
+.rec-indicaciones {
+    margin-top: 4px;
+}
+
+.rec-indicaciones-texto {
+    font-size: 0.9rem;
+    color: var(--rec-texto);
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin: 0 0 12px;
+    white-space: pre-line;
+}
+
+.rec-indicaciones-form textarea {
+    width: 100%;
+    min-height: 84px;
+    padding: 10px 12px;
+    border: 1px solid var(--rec-borde);
+    border-radius: 9px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    resize: vertical;
+    background: var(--rec-fondo);
+    color: var(--rec-texto);
+}
+
+.rec-indicaciones-form textarea:focus {
+    outline: none;
+    border-color: var(--rec-acento);
+    box-shadow: 0 0 0 3px var(--rec-acento-suave);
+}
+
+.rec-indicaciones-form .rec-btn {
+    margin-top: 8px;
+}
+
+.rec-sin-datos {
+    font-size: 0.85rem;
+    color: var(--rec-texto-suave);
+    font-style: italic;
+}
+
+.rec-boton-imprimir {
+    width: 100%;
+    margin-top: 4px;
+}
+
+.rec-detalle-vacio {
+    background: var(--rec-superficie);
+    border: 1px dashed var(--rec-borde);
+    border-radius: var(--rec-radio);
+    padding: 26px;
+    text-align: center;
+    color: var(--rec-texto-suave);
+}
+
+/* ---------- Pie de página ---------- */
+.rec-footer {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--rec-texto-suave);
+    padding: 18px 0 0;
+    border-top: 1px solid var(--rec-borde);
+    margin-top: 26px;
+}
+
+/* ============================================================
+   Vista de impresión: solo se imprime la receta seleccionada.
+   Todo lo demás (sidebar, banner, stats, toolbar, tabla,
+   formularios, botones) se oculta.
+   ============================================================ */
+@media print {
+    .rec-sidebar,
+    .rec-banner,
+    .rec-stats-row,
+    .rec-toolbar,
+    .rec-lista,
+    .rec-footer,
+    .rec-alerta {
+        display: none !important;
+    }
+
+    .rec-layout {
+        display: block;
+    }
+
+    .rec-contenido {
+        display: block;
+    }
+
+    .rec-main {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .rec-detalle-card {
+        position: static;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+    }
+
+    .rec-indicaciones-form,
+    .rec-boton-imprimir {
+        display: none !important;
+    }
+
+    body {
+        background: #fff;
+        color: #000;
+    }
+}
+
+/* ============================================================
+   Media queries propias
+   ============================================================ */
+
+/* ~860px: panel lateral apilado bajo la lista, stats a 2 columnas */
+@media (max-width: 860px) {
+    .rec-layout {
+        grid-template-columns: 220px 1fr;
+    }
+
+    .rec-contenido {
+        grid-template-columns: 1fr;
+    }
+
+    .rec-panel-detalle {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        align-items: start;
+    }
+
+    .rec-detalle-card {
+        position: static;
+    }
+
+    .rec-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .rec-main {
+        padding: 16px;
+    }
+}
+
+/* ~640px: filtros en columna, tabla como tarjetas con data-label
+   y el sidebar se vuelve una barra superior horizontal */
+@media (max-width: 640px) {
+    .rec-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .rec-sidebar {
+        position: static;
+        height: auto;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        overflow: visible;
+    }
+
+    .rec-logo {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+        font-size: 0.95rem;
+    }
+
+    .rec-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 4px;
+    }
+
+    .rec-nav-seccion {
+        display: none;
+    }
+
+    .rec-nav a {
+        white-space: nowrap;
+        padding: 7px 9px;
+    }
+
+    .rec-sidebar-footer {
+        display: none;
+    }
+
+    .rec-stats-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .rec-filtros {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .rec-filtro-boton {
+        flex-direction: column;
+    }
+
+    .rec-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 16px 18px;
+    }
+
+    .rec-datos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .rec-tabla-contenedor {
+        border: none;
+        background: transparent;
+    }
+
+    .rec-tabla, .rec-tabla tbody, .rec-tabla tr, .rec-tabla td {
+        display: block;
+        width: 100%;
+    }
+
+    .rec-tabla thead {
+        display: none;
+    }
+
+    .rec-tabla tr {
+        background: var(--rec-superficie);
+        border: 1px solid var(--rec-borde);
+        border-radius: var(--rec-radio);
+        margin-bottom: 12px;
+        padding: 6px 12px;
+    }
+
+    .rec-tabla td {
+        border: none;
+        padding: 8px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .rec-tabla td::before {
+        content: attr(data-label);
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--rec-texto-suave);
+        flex: 0 0 auto;
+    }
+
+    .rec-tabla td:first-child {
+        padding-top: 10px;
+    }
+
+    .rec-tabla td:last-child {
+        padding-bottom: 10px;
+    }
+}
