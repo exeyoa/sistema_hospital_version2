@@ -321,6 +321,170 @@
     font-size: 0.92rem;
 }
 
+/* Aviso proactivo de conflicto paciente+médico (no bloqueante).
+   Mismos tonos que el badge "pendiente" para coherencia semántica. */
+.aviso-conflicto {
+    background: #FFF3CD;
+    color: #5C4514;
+    border-left: 4px solid #A5730A;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    margin: 8px 0 0;
+    line-height: 1.4;
+}
+.aviso-conflicto[hidden] {
+    display: none;
+}
+
+/* Resultado del lookup de paciente por cédula (#pacientes) */
+.resultado-verificacion {
+    margin: 12px 0;
+    padding: 14px 16px;
+    border-radius: var(--recp-radio-grande);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    animation: aparecer-desde-abajo 0.25s ease both;
+}
+.resultado-verificacion p {
+    margin: 4px 0 8px;
+}
+.resultado-verificacion .btn {
+    margin-top: 4px;
+}
+.resultado-verificacion[hidden] {
+    display: none;
+}
+.resultado-verificacion--existe {
+    background: #D7F3DF;
+    color: #136A3A;
+    border-left: 4px solid var(--color-exito);
+}
+.resultado-verificacion--existe strong {
+    color: #0E4F2C;
+}
+.resultado-verificacion--nuevo {
+    background: var(--recp-azul-muy-claro);
+    color: var(--recp-texto-azul);
+    border-left: 4px solid var(--recp-azul-medio);
+}
+.resultado-verificacion--nuevo strong {
+    color: var(--recp-azul-oscuro);
+}
+.resultado-verificacion--cargando {
+    background: var(--recp-azul-muy-claro);
+    color: var(--recp-texto-azul);
+    border-left: 4px solid var(--recp-azul-claro);
+}
+.resultado-verificacion--error {
+    background: #FCE6E4;
+    color: #6B1A14;
+    border-left: 4px solid var(--color-error);
+}
+.resultado-verificacion--error strong {
+    color: var(--color-error);
+}
+#resto-form-paciente[hidden] {
+    display: none;
+}
+
+/* Cédula panameña: 2 selects + 2 inputs en una sola fila */
+.cedula-panama {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+    margin-bottom: 4px;
+}
+.cedula-panama .cedula-panama__select,
+.cedula-panama .cedula-panama__input {
+    font-family: var(--fuente);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 10px 6px;
+    border: 1px solid var(--color-borde);
+    border-radius: 5px;
+    background: #fff;
+    color: var(--color-texto);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cedula-panama .cedula-panama__select {
+    width: 60px;
+    cursor: pointer;
+}
+.cedula-panama .cedula-panama__input {
+    width: 70px;
+}
+.cedula-panama .cedula-panama__select:focus,
+.cedula-panama .cedula-panama__input:focus {
+    outline: none;
+    border-color: var(--recp-azul-medio);
+    box-shadow: 0 0 0 3px rgba(24, 120, 168, 0.18);
+}
+.cedula-panama__input::placeholder {
+    color: #B0B8B5;
+    font-weight: 400;
+    font-size: 0.78rem;
+}
+.cedula-panama__sep {
+    font-weight: 700;
+    color: var(--recp-azul-medio);
+    font-size: 0.9rem;
+    padding: 0 2px;
+}
+
+/* Fila del buscador: inputs + botón alineados en la misma línea */
+.form-buscar__campo {
+    margin-bottom: 0;
+}
+.form-buscar__fila {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+.form-buscar__btn {
+    flex-shrink: 0;
+    padding: 9px 14px;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+/* Datos del paciente encontrado (lookup con éxito) */
+.datos-paciente__pregunta {
+    margin: 6px 0 12px;
+    font-size: 0.92rem;
+    color: #0E4F2C;
+}
+.datos-paciente {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 6px 18px;
+    margin: 12px 0;
+    font-size: 0.95rem;
+}
+.datos-paciente dt {
+    font-weight: 600;
+    color: #0E4F2C;
+}
+.datos-paciente dd {
+    margin: 0;
+    color: #16241F;
+    font-weight: 500;
+}
+.datos-paciente__acciones {
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.datos-paciente__acciones .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
 /* ---------- Badges de tipo y estado ---------- */
 .badge {
     display: inline-block;
@@ -394,6 +558,182 @@
 }
 
 /* ===========================================================
+   Sidebar de la recepcionista (a la derecha, fija)
+   Mismo lenguaje visual que .medico-sidebar pero con la paleta
+   azul-celeste aprobada para este panel.
+   =========================================================== */
+.recepcionista-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: linear-gradient(180deg,
+        var(--recp-azul-oscuro) 0%,
+        var(--recp-azul-medio)  100%);
+    color: #fff;
+    padding: 1.5rem 1rem;
+    min-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    left: 0; /* cambiado: ahora a la izquierda */
+    top: 64px;
+    overflow-y: auto;
+    z-index: 14;
+    box-shadow: 4px 0 14px -6px rgba(11, 61, 102, 0.35);
+}
+
+.recepcionista-sidebar__encabezado {
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    letter-spacing: 0.04em;
+}
+
+.recepcionista-sidebar__titulo {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.08em;
+    margin: 0 0 0.6rem;
+    text-transform: uppercase;
+}
+
+.recepcionista-sidebar__nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.recepcionista-sidebar__nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 0.85rem;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.recepcionista-sidebar__nav a:hover,
+.recepcionista-sidebar__nav a:focus-visible {
+    background: rgba(255, 255, 255, 0.10);
+    color: #fff;
+    transform: translateX(-2px);
+}
+.recepcionista-sidebar__nav a.activo {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: inset 3px 0 0 var(--recp-azul-claro);
+}
+
+.recepcionista-sidebar__fecha {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+.recepcionista-sidebar__fecha p {
+    margin: 2px 0;
+    color: rgba(255, 255, 255, 0.85);
+}
+.recepcionista-sidebar__fecha strong {
+    color: #fff;
+}
+.recepcionista-sidebar__fecha-icono {
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+}
+
+/* Contenido principal: margen a la izquierda para dejar espacio al sidebar (ahora a la izquierda) */
+.recepcionista-main {
+    margin-left: 260px;
+    margin-top: 16px;
+}
+.recepcionista-main.contenido-panel--ancho {
+    max-width: none;
+    width: auto;
+}
+
+/* Botón hamburguesa en la barra superior (oculto en escritorio) */
+.recepcionista-topbar__menu-btn {
+    display: none;
+    background: rgba(255, 255, 255, 0.18);
+    border: none;
+    color: #fff;
+    font-size: 1.4rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+.recepcionista-topbar__menu-btn:hover,
+.recepcionista-topbar__menu-btn:focus-visible {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+/* Botón perfil del topbar (avatar + nombre + fecha) */
+.recepcionista-topbar__usuario {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: auto;
+}
+.recepcionista-topbar__perfil-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 12px 4px 4px;
+    background: rgba(255, 255, 255, 0.10);
+    border-radius: 999px;
+    color: #fff;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+.recepcionista-topbar__perfil-btn:hover,
+.recepcionista-topbar__perfil-btn:focus-visible {
+    background: rgba(255, 255, 255, 0.22);
+}
+.recepcionista-topbar__avatar,
+.recepcionista-topbar__avatar-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    object-fit: cover;
+}
+.recepcionista-topbar__nombre {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.recepcionista-topbar__nombre small {
+    font-weight: 400;
+    font-size: 0.72rem;
+    opacity: 0.85;
+}
+
+/* ===========================================================
    ≤ 992px — tablet: contadores en 2 columnas, barra flexible
    =========================================================== */
 @media (max-width: 992px) {
@@ -458,6 +798,26 @@
         margin-bottom: 2px;
         font-weight: 600;
     }
+
+    /* Sidebar: oculto a la izquierda, aparece con .abierta */
+    .recepcionista-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.2s ease;
+        width: 240px;
+    }
+    .recepcionista-sidebar.abierta {
+        transform: translateX(0);
+    }
+    /* El contenido ocupa todo el ancho cuando el sidebar está oculto */
+    .recepcionista-main {
+        margin-left: 0;
+    }
+    /* Botón hamburguesa visible */
+    .recepcionista-topbar__menu-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 
 /* ===========================================================
@@ -493,5 +853,203 @@
 
     .contenido-panel--ancho {
         padding: 12px;
+    }
+}
+
+/* Animación de aparición (usada por .resultado-verificacion) */
+@keyframes aparecer-desde-abajo {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===========================================================
+   Página de perfil del recepcionista
+   (pages/recepcionista_perfil.php)
+   =========================================================== */
+.tarjeta-perfil {
+    background: #fff;
+    border: 1px solid var(--recp-azul-claro);
+    border-radius: var(--recp-radio-grande);
+    padding: 22px;
+    margin: 18px 0;
+    box-shadow: 0 8px 22px -14px rgba(24, 120, 168, 0.35);
+}
+.tarjeta-perfil h3 {
+    margin-top: 0;
+    color: var(--recp-azul-oscuro);
+    font-size: 1.05rem;
+    border-bottom: 1px solid var(--recp-azul-claro);
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+}
+
+/* Tarjeta resumen: avatar grande + datos de solo lectura */
+.tarjeta-perfil--resumen {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+.tarjeta-perfil__avatar-grande {
+    flex-shrink: 0;
+}
+.tarjeta-perfil__avatar-inicial,
+.tarjeta-perfil__avatar-img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--recp-azul-medio), var(--recp-azul-oscuro));
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 2.4rem;
+    object-fit: cover;
+    box-shadow: 0 6px 14px -6px rgba(11, 61, 102, 0.35);
+}
+.tarjeta-perfil__resumen-datos h3 {
+    border: none;
+    margin: 0 0 6px;
+    color: var(--recp-azul-oscuro);
+    font-size: 1.3rem;
+    padding: 0;
+}
+.tarjeta-perfil__linea {
+    margin: 3px 0;
+    color: var(--recp-texto-azul);
+    font-size: 0.95rem;
+}
+.tarjeta-perfil__linea--suave {
+    color: var(--color-texto-suave);
+    font-size: 0.85rem;
+}
+
+/* Texto de ayuda debajo de un campo */
+.campo__ayuda {
+    margin: 4px 0 0;
+    font-size: 0.8rem;
+    color: var(--color-texto-suave);
+}
+
+/* Indicador de disponibilidad de usuario */
+.usuario-indicador {
+    margin: 6px 0 0;
+    font-size: 0.88rem;
+    font-weight: 600;
+    min-height: 1.2em;
+}
+.usuario-indicador--ok           { color: #136A3A; }
+.usuario-indicador--verificando  { color: var(--recp-azul-medio); }
+.usuario-indicador--error        { color: var(--color-error); }
+
+/* Modal de recorte (Cropper.js) */
+.modal-cropper {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 61, 102, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+}
+.modal-cropper[hidden] {
+    display: none;
+}
+.modal-cropper__contenido {
+    background: #fff;
+    border-radius: var(--recp-radio-grande);
+    padding: 22px;
+    max-width: 560px;
+    width: 100%;
+    max-height: 92vh;
+    overflow: auto;
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.4);
+}
+.modal-cropper__contenido h3 {
+    margin-top: 0;
+    color: var(--recp-azul-oscuro);
+}
+.modal-cropper__contenedor-img {
+    max-height: 60vh;
+    margin: 12px 0;
+    background: var(--recp-azul-muy-claro);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.modal-cropper__contenedor-img img {
+    max-width: 100%;
+    display: block;
+}
+.modal-cropper__acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+/* Botón secundario (para "Cancelar" en el modal) */
+.btn-secundario {
+    background-color: #fff !important;
+    color: var(--recp-azul-medio) !important;
+    border: 1px solid var(--recp-azul-medio) !important;
+}
+.btn-secundario:hover,
+.btn-secundario:focus-visible {
+    background-color: var(--recp-azul-muy-claro) !important;
+}
+
+/* Form de perfil: ocupa el ancho del contenedor */
+.form-perfil {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Lista de requisitos de la política de contraseñas (reusado de login.css) */
+.lista-requisitos-password {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 0;
+    font-size: 0.82rem;
+    color: var(--color-texto-suave);
+}
+.lista-requisitos-password li {
+    padding-left: 20px;
+    position: relative;
+    margin: 2px 0;
+}
+.lista-requisitos-password li::before {
+    content: "○";
+    position: absolute;
+    left: 0;
+    color: var(--color-texto-suave);
+}
+.lista-requisitos-password li.cumple {
+    color: #136A3A;
+}
+.lista-requisitos-password li.cumple::before {
+    content: "✓";
+    color: #136A3A;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .tarjeta-perfil--resumen {
+        flex-direction: column;
+        text-align: center;
+    }
+    .tarjeta-perfil__avatar-inicial,
+    .tarjeta-perfil__avatar-img {
+        width: 90px;
+        height: 90px;
+        font-size: 2rem;
     }
 }
