@@ -195,6 +195,8 @@ function iniciales($nombre, $apellido) {
                     <div class="alerta alerta-exito">Estado del usuario actualizado.</div>
                 <?php elseif (isset($_GET['error']) && $_GET['error'] === 'noPuedesDesactivarte'): ?>
                     <div class="alerta alerta-error">No puedes desactivar tu propia cuenta mientras la tienes abierta.</div>
+                <?php elseif (isset($_GET['error']) && $_GET['error'] === 'noEncontrado'): ?>
+                    <div class="alerta alerta-error">Usuario no encontrado.</div>
                 <?php endif; ?>
                 <div class="tarjeta-usuarios-header">
                     <div>
