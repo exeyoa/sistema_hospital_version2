@@ -165,7 +165,7 @@ function iniciales($nombre, $apellido) {
                 <div class="tarjeta-stat">
                     <div class="tarjeta-stat-encabezado">
                         <div class="tarjeta-stat-icono icono-verde"><?php echo icono('usuarios', 20); ?></div>
-                        <div class="tarjeta-stat-titulo">Pacientes activos</div>
+                        <div class="tarjeta-stat-titulo">Total pacientes</div>
                     </div>
                     <div class="tarjeta-stat-numero"><?php echo $totalPacientes; ?></div>
                     <div class="tarjeta-stat-pie">
