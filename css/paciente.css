@@ -1,0 +1,368 @@
+/* ===========================================================
+   paciente.css — Estilos del Panel del Paciente
+   Se carga DESPUÉS de css/estilo.css (usa sus variables globales
+   y clases base: .btn, .campo, .mensaje-*, .panel-tabla).
+
+   Paleta: misma del recepcionista (azul-celeste) para mantener
+   coherencia visual entre los paneles del hospital.
+   estilo.css NO se toca: las variables de abajo solo viven aquí.
+
+   Breakpoints (los mismos que el resto del proyecto):
+     - Base:        ≥ 993px (escritorio)
+     - ≤ 992px:     tablet / layout de una columna
+     - ≤ 768px:     móvil — tablas → tarjetas apiladas
+     - ≤ 480px:     móvil pequeño — inputs a 16px, botones ancho completo
+   =========================================================== */
+
+:root {
+    --pac-azul-oscuro:    #0B3D66;
+    --pac-azul-medio:     #1878A8;
+    --pac-azul-claro:     #CFE8F7;
+    --pac-azul-muy-claro: #F3FAF7;
+    --pac-fondo:          #F3FAF7;
+    --pac-texto-azul:     #0E3A5C;
+    --pac-radio-grande:   14px;
+}
+
+/* ---------- Cabecera del panel (mismo lenguaje visual que el del recepcionista) ---------- */
+.paciente-barra {
+    background: linear-gradient(135deg,
+        var(--pac-azul-oscuro) 0%,
+        var(--pac-azul-medio)  100%);
+    color: #fff;
+    box-shadow: 0 4px 14px -6px rgba(11, 61, 102, 0.45);
+}
+.paciente-barra .marca {
+    color: #fff;
+    font-weight: 700;
+}
+
+.paciente-topbar__usuario {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: auto;
+}
+.paciente-topbar__perfil-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 12px 4px 4px;
+    background: rgba(255, 255, 255, 0.10);
+    border-radius: 999px;
+    color: #fff;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+.paciente-topbar__perfil-btn:hover,
+.paciente-topbar__perfil-btn:focus-visible {
+    background: rgba(255, 255, 255, 0.22);
+}
+.paciente-topbar__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+.paciente-topbar__nombre {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+.paciente-topbar__nombre small {
+    font-weight: 400;
+    font-size: 0.72rem;
+    opacity: 0.85;
+}
+
+.paciente-topbar__menu-btn {
+    display: none;
+    background: rgba(255, 255, 255, 0.18);
+    border: none;
+    color: #fff;
+    font-size: 1.4rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+.paciente-topbar__menu-btn:hover,
+.paciente-topbar__menu-btn:focus-visible {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+/* ---------- Sidebar del paciente ---------- */
+.paciente-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: linear-gradient(180deg,
+        var(--pac-azul-oscuro) 0%,
+        var(--pac-azul-medio)  100%);
+    color: #fff;
+    padding: 1.5rem 1rem;
+    min-height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    left: 0;
+    top: 64px;
+    overflow-y: auto;
+    z-index: 14;
+    box-shadow: 4px 0 14px -6px rgba(11, 61, 102, 0.35);
+}
+.paciente-sidebar__encabezado {
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 1.2rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    letter-spacing: 0.04em;
+}
+.paciente-sidebar__titulo {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.08em;
+    margin: 0 0 0.6rem;
+    text-transform: uppercase;
+}
+.paciente-sidebar__nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.paciente-sidebar__nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 0.85rem;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.paciente-sidebar__nav a:hover,
+.paciente-sidebar__nav a:focus-visible {
+    background: rgba(255, 255, 255, 0.10);
+    color: #fff;
+    transform: translateX(-2px);
+}
+.paciente-sidebar__nav a.activo {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: inset 3px 0 0 var(--pac-azul-claro);
+}
+
+/* Contenido principal */
+.paciente-main {
+    margin-left: 260px;
+    margin-top: 16px;
+}
+.paciente-main.contenido-panel--ancho {
+    max-width: none;
+    width: auto;
+}
+
+/* ---------- Tarjetas del panel ---------- */
+.tarjeta-paciente {
+    background: #fff;
+    border: 1px solid var(--pac-azul-claro);
+    border-radius: var(--pac-radio-grande);
+    padding: 22px;
+    margin: 18px 0;
+    box-shadow: 0 8px 22px -14px rgba(11, 61, 102, 0.30);
+}
+.tarjeta-paciente h3 {
+    color: var(--pac-azul-oscuro);
+    margin-top: 0;
+    border-bottom: 1px solid var(--pac-azul-claro);
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+}
+
+/* Resumen dashboard (3 contadores) */
+.tarjeta-paciente-contadores {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 18px 0;
+}
+.tarjeta-contador-pac {
+    background: linear-gradient(160deg, #fff 0%, var(--pac-azul-muy-claro) 100%);
+    border: 1px solid var(--pac-azul-claro);
+    border-radius: var(--pac-radio-grande);
+    padding: 16px 18px;
+    box-shadow: 0 4px 12px -8px rgba(11, 61, 102, 0.30);
+}
+.tarjeta-contador-pac__numero {
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--pac-azul-medio);
+    line-height: 1.1;
+}
+.tarjeta-contador-pac__etiqueta {
+    font-size: 0.82rem;
+    color: var(--pac-texto-azul);
+    font-weight: 500;
+}
+
+/* ---------- Tablas (citas, consultas, recetas) ---------- */
+.tabla-paciente {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    background: #fff;
+    border-radius: var(--pac-radio-grande);
+    overflow: hidden;
+    box-shadow: 0 6px 18px -12px rgba(11, 61, 102, 0.30);
+}
+.tabla-paciente th {
+    text-align: left;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: #fff;
+    padding: 12px 14px;
+    background: var(--pac-azul-medio);
+    text-transform: uppercase;
+}
+.tabla-paciente td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--pac-azul-muy-claro);
+    vertical-align: top;
+}
+.tabla-paciente tbody tr:last-child td {
+    border-bottom: none;
+}
+.tabla-paciente tbody tr:hover {
+    background: var(--pac-azul-muy-claro);
+}
+
+/* ---------- Badges de estado de cita ---------- */
+.badge-paciente {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.badge-paciente-pendiente  { background: #FFE9C2; color: #8C5A12; }
+.badge-paciente-confirmada { background: var(--pac-azul-claro); color: var(--pac-azul-oscuro); }
+.badge-paciente-cancelada  { background: #ECEFF3; color: #4B5563; }
+.badge-paciente-atendida   { background: #D7F3DF; color: #136A3A; }
+
+/* Botón secundario */
+.btn-paciente-secundario {
+    background-color: #fff !important;
+    color: var(--pac-azul-medio) !important;
+    border: 1px solid var(--pac-azul-medio) !important;
+}
+.btn-paciente-secundario:hover,
+.btn-paciente-secundario:focus-visible {
+    background-color: var(--pac-azul-muy-claro) !important;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 992px) {
+    .paciente-barra {
+        flex-wrap: wrap;
+        gap: 10px;
+        row-gap: 6px;
+    }
+    .contenido-panel--ancho {
+        padding: 16px;
+    }
+    .tarjeta-paciente-contadores {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    /* Sidebar: oculto a la izquierda, aparece con .abierta */
+    .paciente-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.2s ease;
+        width: 240px;
+    }
+    .paciente-sidebar.abierta {
+        transform: translateX(0);
+    }
+    .paciente-main {
+        margin-left: 0;
+    }
+    .paciente-topbar__menu-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Tablas → tarjetas apiladas */
+    .tabla-paciente thead {
+        display: none;
+    }
+    .tabla-paciente,
+    .tabla-paciente tbody,
+    .tabla-paciente tr,
+    .tabla-paciente td {
+        display: block;
+        width: 100%;
+    }
+    .tabla-paciente tr {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--pac-azul-muy-claro);
+    }
+    .tabla-paciente tbody tr:last-child {
+        border-bottom: none;
+    }
+    .tabla-paciente td {
+        border: none;
+        padding: 4px 0;
+    }
+    .tabla-paciente td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.72rem;
+        color: var(--pac-texto-azul);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 2px;
+        font-weight: 600;
+    }
+}
+
+@media (max-width: 480px) {
+    .campo input,
+    .campo select {
+        font-size: 16px;
+    }
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+    .tarjeta-paciente-contadores {
+        grid-template-columns: 1fr 1fr;
+    }
+    .contenido-panel--ancho {
+        padding: 12px;
+    }
+}
+

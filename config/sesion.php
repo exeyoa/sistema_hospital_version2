@@ -139,3 +139,41 @@ function validarTokenCSRF(?string $tokenRecibido): bool
         && is_string($tokenRecibido)
         && hash_equals($_SESSION['csrf_token'], $tokenRecibido);
 }
+
+/**
+ * Variante de verificarSesion() para el rol `paciente`.
+ *
+ * El paciente es una entidad DIFERENTE al usuario del sistema
+ * (tabla `pacientes`, no `usuarios`), por eso no usa
+ * `$_SESSION['id_usuario']`. En su lugar usa `$_SESSION['id_paciente']`.
+ *
+ * Si no hay sesión de paciente válida, redirige al login de pacientes
+ * (`login_paciente.php`) en vez del login general (`login.php`).
+ */
+function verificarSesionPaciente(): void
+{
+    iniciarSesionSegura();
+
+    // 1) ¿Hay una sesión de paciente iniciada?
+    if (!isset($_SESSION['id_paciente'])) {
+        header('Location: login_paciente.php');
+        exit;
+    }
+
+    // 2) Cierre automático por inactividad (mismo plazo que el resto)
+    if (isset($_SESSION['ultima_actividad'])
+        && (time() - $_SESSION['ultima_actividad']) > TIEMPO_INACTIVIDAD_SEGUNDOS
+    ) {
+        cerrarSesionCompleta();
+        header('Location: login_paciente.php?expirada=1');
+        exit;
+    }
+    $_SESSION['ultima_actividad'] = time();
+
+    // 3) Control de acceso por rol: solo `paciente` pasa
+    if (($_SESSION['rol'] ?? '') !== 'paciente') {
+        cerrarSesionCompleta();
+        header('Location: login_paciente.php');
+        exit;
+    }
+}

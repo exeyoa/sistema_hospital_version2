@@ -40,9 +40,22 @@ function limpiarCodigosRecuperacion(PDO $conexion): int
 /**
  * Genera un código aleatorio de 6 dígitos, lo guarda en
  * codigos_recuperacion con expiración de 5 minutos y lo retorna.
+ *
+ * Polimórfica: el código puede ser para un `usuario` (admin / medico /
+ * recepcionista) o para un `paciente`. La tabla `codigos_recuperacion`
+ * tiene `id_usuario` y `id_paciente` como columnas NULLables; la
+ * aplicación se encarga de que EXACTAMENTE uno de los dos esté
+ * establecido.
+ *
+ * @param string $tipo 'usuario' o 'paciente'
  */
-function generarCodigoRecuperacion(PDO $conexion, int $idUsuario): string
+function generarCodigoRecuperacion(PDO $conexion, int $idEntidad, string $tipo = 'usuario'): string
 {
+    if (!in_array($tipo, ['usuario', 'paciente'], true)) {
+        throw new InvalidArgumentException("tipo debe ser 'usuario' o 'paciente'");
+    }
+    $columnaId = $tipo === 'usuario' ? 'id_usuario' : 'id_paciente';
+
     // Limpieza ligera y automática (sin cron): con probabilidad 1/20 se borran
     // códigos viejos (usados o expirados, con +24 h). Nunca afecta flujos activos.
     if (random_int(1, 20) === 1) {
@@ -65,12 +78,14 @@ function generarCodigoRecuperacion(PDO $conexion, int $idUsuario): string
         $intentos++;
     } while ($yaEmitido && $intentos < 10);
 
-    $sql = "INSERT INTO codigos_recuperacion (id_usuario, codigo, fecha_creacion, fecha_expiracion)
-            VALUES (:id_usuario, :codigo, NOW(), (NOW() + INTERVAL 5 MINUTE))";
+    // Inserta con el id en la columna correspondiente y NULL en la otra.
+    $columnaOtra = $tipo === 'usuario' ? 'id_paciente' : 'id_usuario';
+    $sql = "INSERT INTO codigos_recuperacion ($columnaId, $columnaOtra, codigo, fecha_creacion, fecha_expiracion)
+            VALUES (:id_entidad, NULL, :codigo, NOW(), (NOW() + INTERVAL 5 MINUTE))";
 
     $stmt = $conexion->prepare($sql);
     $stmt->execute([
-        ':id_usuario' => $idUsuario,
+        ':id_entidad' => $idEntidad,
         ':codigo'     => $codigo,
     ]);
 
@@ -116,19 +131,26 @@ function enviarCorreoCodigo(string $correoDestino, string $nombre, string $codig
  * Verifica que el código sea correcto, no esté usado y no haya expirado,
  * SIN marcarlo como usado. Útil para el sub-paso "verificar código",
  * donde la contraseña todavía no se ha cambiado.
+ *
+ * Polimórfica: ver generarCodigoRecuperacion() para $tipo.
  */
-function verificarCodigoRecuperacion(PDO $conexion, int $idUsuario, string $codigoIngresado): bool
+function verificarCodigoRecuperacion(PDO $conexion, int $idEntidad, string $codigoIngresado, string $tipo = 'usuario'): bool
 {
+    if (!in_array($tipo, ['usuario', 'paciente'], true)) {
+        throw new InvalidArgumentException("tipo debe ser 'usuario' o 'paciente'");
+    }
+    $columnaId = $tipo === 'usuario' ? 'id_usuario' : 'id_paciente';
+
     $sql = "SELECT codigo
             FROM codigos_recuperacion
-            WHERE id_usuario = :id_usuario
+            WHERE $columnaId = :id_entidad
               AND usado = 0
               AND fecha_expiracion > NOW()
             ORDER BY id_codigo DESC
             LIMIT 1";
 
     $stmt = $conexion->prepare($sql);
-    $stmt->execute([':id_usuario' => $idUsuario]);
+    $stmt->execute([':id_entidad' => $idEntidad]);
     $fila = $stmt->fetch(PDO::FETCH_ASSOC);
 
     return $fila && hash_equals($fila['codigo'], $codigoIngresado);
@@ -137,19 +159,26 @@ function verificarCodigoRecuperacion(PDO $conexion, int $idUsuario, string $codi
 /**
  * Valida que el código ingresado sea correcto, no esté usado y no haya
  * expirado. Si es válido, lo marca como usado = 1 (no se borra) y retorna true.
+ *
+ * Polimórfica: ver generarCodigoRecuperacion() para $tipo.
  */
-function validarCodigoRecuperacion(PDO $conexion, int $idUsuario, string $codigoIngresado): bool
+function validarCodigoRecuperacion(PDO $conexion, int $idEntidad, string $codigoIngresado, string $tipo = 'usuario'): bool
 {
+    if (!in_array($tipo, ['usuario', 'paciente'], true)) {
+        throw new InvalidArgumentException("tipo debe ser 'usuario' o 'paciente'");
+    }
+    $columnaId = $tipo === 'usuario' ? 'id_usuario' : 'id_paciente';
+
     $sql = "SELECT id_codigo, codigo
             FROM codigos_recuperacion
-            WHERE id_usuario = :id_usuario
+            WHERE $columnaId = :id_entidad
               AND usado = 0
               AND fecha_expiracion > NOW()
             ORDER BY id_codigo DESC
             LIMIT 1";
 
     $stmt = $conexion->prepare($sql);
-    $stmt->execute([':id_usuario' => $idUsuario]);
+    $stmt->execute([':id_entidad' => $idEntidad]);
     $fila = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$fila || !hash_equals($fila['codigo'], $codigoIngresado)) {

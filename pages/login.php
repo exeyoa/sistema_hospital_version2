@@ -111,6 +111,11 @@ $csrfToken = generarTokenCSRF();
 
                     <button type="submit" class="btn">Entrar</button>
                 </form>
+
+                <p class="subtitulo" style="margin-top:18px; margin-bottom:0;">
+                    ¿Eres paciente?
+                    <a href="activar_cuenta_paciente.php" class="link-recuperar">Activa tu cuenta aquí</a>
+                </p>
             </div>
         </div>
     </div>
