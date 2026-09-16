@@ -19,7 +19,9 @@ function recDiasDuracion($texto) {
     if ($texto === null || trim((string) $texto) === '') {
         return null;
     }
-    if (preg_match('/(\d+)\s*d[ií]as?/i', (string) $texto, $m)) {
+    // Nota: se usa (?:i|\xc3\xad) en vez de un rango [ií] porque PCRE sin
+    // el modificador /u procesa por bytes y "í" (2 bytes) desalinea el patrón.
+    if (preg_match('/(\d+)\s*d(?:i|\xc3\xad)as?/i', (string) $texto, $m)) {
         return (int) $m[1];
     }
     return null;
