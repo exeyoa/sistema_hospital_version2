@@ -28,7 +28,7 @@ $fechaHoySidebar = sprintf('%s, %d de %s de %s', $diasSemana[date('l')], date('j
             <li><a href="medico.php" class="<?= claseActiva($paginaActiva, 'cola') ?>">👥 Cola de pacientes</a></li>
             <li><a href="mis_consultas.php" class="<?= claseActiva($paginaActiva, 'mis_consultas') ?>">📋 Mis consultas</a></li>
             <li><a href="historial.php" class="<?= claseActiva($paginaActiva, 'historial') ?>">🗂️ Historial clínico</a></li>
-            <li><a href="#" class="<?= claseActiva($paginaActiva, 'recetas') ?>">📄 Recetas emitidas</a></li>
+            <li><a href="recetas.php" class="<?= claseActiva($paginaActiva, 'recetas') ?>">📄 Recetas emitidas</a></li>
             <li><a href="perfil.php" class="<?= claseActiva($paginaActiva, 'perfil') ?>">👤 Perfil</a></li>
             <li><a href="logout.php">↪️ Cerrar sesión</a></li>
         </ul>
