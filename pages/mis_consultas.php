@@ -110,7 +110,7 @@ $consultas = $stmtConsultas->fetchAll(PDO::FETCH_ASSOC);
                                     <?php if ($consulta['id_receta']): ?>
                                         <span class="badge badge-estado-atendido">Con receta</span>
                                     <?php else: ?>
-                                        <span class="badge" style="background-color:#eee;color:#777;">Sin receta</span>
+                                        <span class="badge badge-sin-receta">Sin receta</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>

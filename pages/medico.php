@@ -41,6 +41,9 @@ $atendidosHoy = (int) $stmtAtendidos->fetchColumn();
 
 $pendientesHoy = count($cola);
 
+// Conteo para el badge de notificaciones del topbar (compartido)
+$notificacionesTopbar = $pendientesHoy;
+
 // --- Función pequeña para calcular edad a partir de fecha_nacimiento ---
 function calcularEdad(?string $fechaNacimiento): ?int {
     if (!$fechaNacimiento) {

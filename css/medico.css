@@ -399,6 +399,7 @@
 .badge-estado-en_espera { background-color: #fef3d7; color: #a5730a; }
 .badge-estado-en_consulta { background-color: #e6efff; color: #2554c7; }
 .badge-estado-atendido { background-color: #e3f9ec; color: #1a9e5c; }
+.badge-sin-receta { background-color: #eee; color: #777; }
 
 .btn-accion {
     display: inline-flex;
