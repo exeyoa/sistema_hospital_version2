@@ -16,13 +16,20 @@ $medico = $stmtMedico->fetch(PDO::FETCH_ASSOC);
 if (!$medico) {
     die('Error: no se encontró un registro de médico asociado a este usuario. Contacte al administrador.');
 }
-$id_medico = $medico['id_medico'];
+$id_medico = (int) $medico['id_medico'];
 
 // --- Filtro: 'hoy' (por defecto) o 'todas' ---
 // Solo aceptamos dos valores posibles (whitelist), así que es seguro
 // usarlo directamente en el SQL sin necesidad de parámetro preparado para esta parte.
 $filtro = (isset($_GET['filtro']) && $_GET['filtro'] === 'todas') ? 'todas' : 'hoy';
 $condicionFecha = ($filtro === 'hoy') ? 'AND DATE(c.fecha_consulta) = CURDATE()' : '';
+
+// --- Búsqueda por nombre, apellido o cédula ---
+$busqueda = trim((string) ($_GET['busqueda'] ?? ''));
+$termino  = '%' . $busqueda . '%';
+$condicionBusqueda = ($busqueda !== '')
+    ? 'AND (p.cedula LIKE :termino OR p.nombre LIKE :termino OR p.apellido LIKE :termino)'
+    : '';
 
 // --- Consulta: historial de consultas de este médico ---
 $sqlConsultas = "
@@ -34,10 +41,15 @@ $sqlConsultas = "
     LEFT JOIN recetas r ON r.id_consulta = c.id_consulta
     WHERE c.id_medico = :id_medico
     $condicionFecha
+    $condicionBusqueda
     ORDER BY c.fecha_consulta DESC
 ";
 $stmtConsultas = $conexion->prepare($sqlConsultas);
-$stmtConsultas->execute([':id_medico' => $id_medico]);
+$stmtConsultas->bindValue(':id_medico', $id_medico, PDO::PARAM_INT);
+if ($busqueda !== '') {
+    $stmtConsultas->bindValue(':termino', $termino, PDO::PARAM_STR);
+}
+$stmtConsultas->execute();
 $consultas = $stmtConsultas->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -72,6 +84,16 @@ $consultas = $stmtConsultas->fetchAll(PDO::FETCH_ASSOC);
         </div>
 
         <section class="panel-tabla" style="grid-column: 1 / -1;">
+            <form method="get" action="mis_consultas.php" class="campo panel-tabla__filtros">
+                <input type="hidden" name="filtro" value="<?= htmlspecialchars($filtro) ?>">
+                <div style="flex:1;">
+                    <input type="text" name="busqueda" id="busqueda"
+                           placeholder="Buscar por cédula, nombre o apellido…"
+                           value="<?= htmlspecialchars($busqueda) ?>">
+                </div>
+                <button type="submit" class="btn">Buscar</button>
+            </form>
+
             <?php if (empty($consultas)): ?>
                 <div class="panel-tabla__vacio">
                     <?= $filtro === 'hoy' ? 'Todavía no has atendido consultas hoy.' : 'No tienes consultas registradas.' ?>
@@ -108,9 +130,10 @@ $consultas = $stmtConsultas->fetchAll(PDO::FETCH_ASSOC);
                                 <td data-label="Diagnóstico" class="texto-recortado"><?= htmlspecialchars($consulta['diagnostico']) ?></td>
                                 <td data-label="Receta">
                                     <?php if ($consulta['id_receta']): ?>
-                                        <span class="badge badge-estado-atendido">Con receta</span>
+                                        <a class="btn-accion atender"
+                                           href="recetas.php?id_receta=<?= (int) $consulta['id_receta'] ?>">Ver receta</a>
                                     <?php else: ?>
-                                        <span class="badge" style="background-color:#eee;color:#777;">Sin receta</span>
+                                        <span class="badge badge-sin-receta">Sin receta</span>
                                     <?php endif; ?>
                                 </td>
                             </tr>

@@ -14,7 +14,7 @@ $inicialesTopbar = strtoupper(mb_substr($partesNombre[0], 0, 1) . (isset($partes
     <div class="medico-topbar__user">
         <span class="medico-topbar__campana">
             🔔
-            <span class="badge-notif">3</span>
+            <span class="badge-notif"><?= (int)($notificacionesTopbar ?? 0) ?></span>
         </span>
 
         <div class="medico-topbar__nombre">
