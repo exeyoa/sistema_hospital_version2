@@ -239,6 +239,7 @@ foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $fila) {
     <title>Especialidades</title>
     <link rel="stylesheet" href="../css/estilo.css">
     <link rel="stylesheet" href="../css/admin_especialidades.css">
+    <link rel="stylesheet" href="../css/admin_tema.css">
 </head>
 <body class="esp-body">
 

@@ -103,6 +103,7 @@ function sexoMostrar($sexo) {
     <title>Pacientes</title>
     <link rel="stylesheet" href="../css/estilo.css">
     <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/admin_tema.css">
 </head>
 <body class="admin-body">
 

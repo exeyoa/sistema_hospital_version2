@@ -217,6 +217,7 @@ function conTipoTexto($tipo) {
     <title>Consultas - Hospital San Rafael</title>
     <link rel="stylesheet" href="../css/estilo.css">
     <link rel="stylesheet" href="../css/admin_consultas.css">
+    <link rel="stylesheet" href="../css/admin_tema.css">
 </head>
 <body class="con-body">
 

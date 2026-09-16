@@ -297,6 +297,7 @@ foreach (['fecha', 'id_especialidad', 'buscar'] as $claveFiltro) {
     <title>Recetas - Hospital San Rafael</title>
     <link rel="stylesheet" href="../css/estilo.css">
     <link rel="stylesheet" href="../css/admin_recetas.css">
+    <link rel="stylesheet" href="../css/admin_tema.css">
 </head>
 <body class="rec-body">
 
