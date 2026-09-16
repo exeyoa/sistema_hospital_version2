@@ -87,9 +87,8 @@ $consultas = $stmtConsultas->fetchAll(PDO::FETCH_ASSOC);
             <form method="get" action="mis_consultas.php" class="campo panel-tabla__filtros">
                 <input type="hidden" name="filtro" value="<?= htmlspecialchars($filtro) ?>">
                 <div style="flex:1;">
-                    <label for="busqueda">Buscar por cédula, nombre o apellido</label>
                     <input type="text" name="busqueda" id="busqueda"
-                           placeholder="Ej: 12345678 o Juan Pérez…"
+                           placeholder="Buscar por cédula, nombre o apellido…"
                            value="<?= htmlspecialchars($busqueda) ?>">
                 </div>
                 <button type="submit" class="btn">Buscar</button>
