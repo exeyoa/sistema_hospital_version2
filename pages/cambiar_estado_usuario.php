@@ -1,16 +1,25 @@
-6<?php
-session_start();
+<?php
+require_once __DIR__ . '/../config/sesion.php';
 
-if (!isset($_SESSION['id_usuario']) || $_SESSION['rol'] !== 'admin') {
-    header('Location: login.php');
-    exit;
-}
+// Cambio de estado (activo/inactivo). Se acepta SOLO por POST con token
+// CSRF (RNF-08): nunca por GET, para no desactivar cuentas con un enlace.
+verificarSesion(['admin']);
 
 require_once __DIR__ . '/../config/conexion.php';
 
-$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: admin.php');
+    exit;
+}
+
+if (!validarTokenCSRF($_POST['csrf_token'] ?? null)) {
+    header('Location: admin.php');
+    exit;
+}
+
+$id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
 // A qué página regresar después: admin.php (usuarios) o admin_medicos.php
-$volver = ($_GET['volver'] ?? '') === 'medicos' ? 'admin_medicos.php' : 'admin.php';
+$volver = ($_POST['volver'] ?? '') === 'medicos' ? 'admin_medicos.php' : 'admin.php';
 
 if ($id > 0) {
 

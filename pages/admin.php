@@ -11,6 +11,8 @@ verificarSesion(['admin']);
 require_once __DIR__ . '/../config/conexion.php'; // expone $conexion (PDO)
 require_once __DIR__ . '/_iconos.php';
 
+$csrfToken = generarTokenCSRF();
+
 // ---------------------------------------------------------------
 // 2) DATOS PARA LAS TARJETAS DE ESTADÍSTICAS (RF-09)
 // ---------------------------------------------------------------
@@ -265,15 +267,19 @@ function iniciales($nombre, $apellido) {
                                 <?php if ($u['id_usuario'] == $_SESSION['id_usuario']): ?>
                                     <a href="#" title="No puedes desactivar tu propia cuenta" style="opacity:0.35; cursor:not-allowed;" onclick="return false;"><?php echo icono('candado', 15); ?></a>
                                 <?php elseif ($u['activo']): ?>
-                                    <a href="cambiar_estado_usuario.php?id=<?php echo $u['id_usuario']; ?>" title="Desactivar usuario"
-                                       onclick="return confirm('¿Desactivar a <?php echo htmlspecialchars(addslashes($u['nombre'] . ' ' . $u['apellido'])); ?>? No podrá iniciar sesión hasta que lo actives de nuevo.');">
-                                        <?php echo icono('candado', 15); ?>
-                                    </a>
+                                    <form method="post" action="cambiar_estado_usuario.php" class="accion-fila-form"
+                                          onsubmit="return confirm('¿Desactivar a <?php echo htmlspecialchars(addslashes($u['nombre'] . ' ' . $u['apellido'])); ?>? No podrá iniciar sesión hasta que lo actives de nuevo.');">
+                                        <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                                        <input type="hidden" name="id" value="<?php echo $u['id_usuario']; ?>">
+                                        <button type="submit" class="btn-icono-fila" title="Desactivar usuario"><?php echo icono('candado', 15); ?></button>
+                                    </form>
                                 <?php else: ?>
-                                    <a href="cambiar_estado_usuario.php?id=<?php echo $u['id_usuario']; ?>" title="Activar usuario"
-                                       onclick="return confirm('¿Activar a <?php echo htmlspecialchars(addslashes($u['nombre'] . ' ' . $u['apellido'])); ?>?');">
-                                        <?php echo icono('escudo', 15); ?>
-                                    </a>
+                                    <form method="post" action="cambiar_estado_usuario.php" class="accion-fila-form"
+                                          onsubmit="return confirm('¿Activar a <?php echo htmlspecialchars(addslashes($u['nombre'] . ' ' . $u['apellido'])); ?>?');">
+                                        <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                                        <input type="hidden" name="id" value="<?php echo $u['id_usuario']; ?>">
+                                        <button type="submit" class="btn-icono-fila" title="Activar usuario"><?php echo icono('escudo', 15); ?></button>
+                                    </form>
                                 <?php endif; ?>
                             </td>
                         </tr>
